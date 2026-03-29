@@ -1,0 +1,2530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SocialPulse AI — Crisis Intelligence Platform v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy-900: #040d1a;
+  --navy-800: #071328;
+  --navy-700: #0a1f3d;
+  --navy-600: #0e2a52;
+  --navy-500: #133568;
+  --blue-accent: #1a6ef5;
+  --blue-light: #3d8bff;
+  --blue-glow: rgba(26,110,245,0.18);
+  --cyan: #00d4ff;
+  --cyan-dim: rgba(0,212,255,0.12);
+  --red: #ff3b5c;
+  --red-dim: rgba(255,59,92,0.12);
+  --orange: #ff8c42;
+  --orange-dim: rgba(255,140,66,0.12);
+  --yellow: #ffd166;
+  --yellow-dim: rgba(255,209,102,0.12);
+  --green: #06d6a0;
+  --green-dim: rgba(6,214,160,0.12);
+  --text: #e4ecff;
+  --text-dim: #7a90b8;
+  --text-faint: #3d5278;
+  --border: rgba(255,255,255,0.06);
+  --border-bright: rgba(26,110,245,0.3);
+  --card: rgba(10,31,61,0.8);
+  --surface: rgba(7,19,40,0.95);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--navy-900);
+  color: var(--text);
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated grid background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(26,110,245,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,110,245,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -200px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(26,110,245,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: drift 12s ease-in-out infinite alternate;
+}
+@keyframes drift { to { transform: translate(200px, 100px); } }
+
+/* SIDEBAR */
+.sidebar {
+  width: 250px;
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 100;
+  backdrop-filter: blur(20px);
+}
+
+.logo-area {
+  padding: 28px 22px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-wrap {
+  display: flex; align-items: center; gap: 13px;
+}
+
+.logo-mark {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, var(--blue-accent), var(--cyan));
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 24px rgba(26,110,245,0.5), 0 0 60px rgba(26,110,245,0.15);
+  animation: logoGlow 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes logoGlow {
+  0%,100% { box-shadow: 0 0 24px rgba(26,110,245,0.5), 0 0 60px rgba(26,110,245,0.15); }
+  50% { box-shadow: 0 0 36px rgba(0,212,255,0.6), 0 0 80px rgba(26,110,245,0.25); }
+}
+
+.logo-name {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  line-height: 1.2;
+}
+.logo-name span { color: var(--cyan); }
+.logo-sub { font-size: 10.5px; color: var(--text-dim); font-weight: 400; margin-top: 2px; letter-spacing: 0.3px; }
+
+.nav { padding: 18px 0; flex: 1; }
+
+.nav-section-label {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-faint);
+  padding: 0 22px;
+  margin: 16px 0 6px;
+  font-weight: 600;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 22px;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  margin: 1px 0;
+  position: relative;
+}
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(26,110,245,0.06);
+}
+.nav-item.active {
+  color: var(--text);
+  background: rgba(26,110,245,0.1);
+  border-left-color: var(--blue-accent);
+}
+.nav-item.active .nav-icon-wrap {
+  background: var(--blue-glow);
+  color: var(--blue-light);
+}
+.nav-icon-wrap {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  font-size: 15px;
+  transition: all 0.2s;
+  background: transparent;
+}
+.nav-badge {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.sidebar-footer {
+  padding: 16px 22px 22px;
+  border-top: 1px solid var(--border);
+}
+
+.live-indicator {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--green-dim);
+  border: 1px solid rgba(6,214,160,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.live-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: livePulse 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+.live-text { font-size: 12px; color: var(--green); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+.live-sub { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+
+.system-status {
+  font-size: 11px; color: var(--text-faint);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.status-row { display: flex; justify-content: space-between; }
+.status-val { color: var(--green); font-family: 'JetBrains Mono', monospace; }
+
+/* MAIN */
+.main {
+  margin-left: 250px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+/* TOPBAR */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 90;
+  backdrop-filter: blur(20px);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 16px; }
+.page-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.page-crumb { font-size: 12px; color: var(--text-dim); }
+
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+
+.alert-pill {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--red-dim);
+  border: 1px solid rgba(255,59,92,0.25);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  color: var(--red);
+  font-weight: 600;
+  cursor: pointer;
+  animation: alertPulse 2.5s ease-in-out infinite;
+}
+@keyframes alertPulse { 0%,100%{border-color:rgba(255,59,92,0.25)} 50%{border-color:rgba(255,59,92,0.6)} }
+.alert-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: livePulse 1s infinite; }
+
+.clock-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--text-dim);
+  background: var(--navy-700);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  letter-spacing: 0.5px;
+}
+
+.topbar-btn {
+  background: var(--blue-accent);
+  color: white; border: none;
+  padding: 8px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.2s;
+  box-shadow: 0 0 20px rgba(26,110,245,0.3);
+}
+.topbar-btn:hover { background: var(--blue-light); box-shadow: 0 0 30px rgba(26,110,245,0.5); }
+
+/* PAGE */
+.page { display: none; padding: 28px 32px; animation: pageIn 0.35s ease; }
+.page.active { display: block; }
+@keyframes pageIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* STAT CARDS */
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+  backdrop-filter: blur(10px);
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 16px 16px 0 0;
+}
+.kpi-card.blue::before { background: linear-gradient(90deg, var(--blue-accent), var(--cyan)); }
+.kpi-card.red::before { background: linear-gradient(90deg, var(--red), var(--orange)); }
+.kpi-card.orange::before { background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+.kpi-card.green::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+.kpi-card:hover { transform: translateY(-2px); border-color: var(--border-bright); }
+
+.kpi-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.kpi-icon.blue { background: var(--blue-glow); }
+.kpi-icon.red { background: var(--red-dim); }
+.kpi-icon.orange { background: var(--orange-dim); }
+.kpi-icon.green { background: var(--green-dim); }
+.kpi-trend { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+.kpi-trend.up { background: var(--green-dim); color: var(--green); }
+.kpi-trend.down { background: var(--red-dim); color: var(--red); }
+.kpi-trend.neutral { background: var(--blue-glow); color: var(--blue-light); }
+
+.kpi-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 6px; }
+.kpi-value { font-size: 30px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; margin-bottom: 4px; }
+.kpi-sub { font-size: 11.5px; color: var(--text-dim); }
+
+/* SECTION */
+.section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(10px);
+}
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.section-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+.section-title .icon { font-size: 17px; }
+
+/* PLATFORM PILLS */
+.platform-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
+
+.plat-card {
+  background: var(--navy-700);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all 0.2s;
+}
+.plat-card:hover { border-color: var(--border-bright); }
+.plat-left { display: flex; align-items: center; gap: 12px; }
+.plat-emoji { font-size: 22px; }
+.plat-name { font-size: 13px; font-weight: 600; }
+.plat-status { font-size: 11px; margin-top: 2px; }
+.spike { color: var(--red); } .steady { color: var(--text-dim); } .trending { color: var(--orange); }
+.plat-count { font-size: 26px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+
+/* TABLE */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left; padding: 10px 16px;
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-faint); border-bottom: 1px solid var(--border);
+  font-weight: 700;
+}
+.data-table td { padding: 15px 16px; font-size: 13.5px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+.data-table tr:hover td { background: rgba(26,110,245,0.04); }
+.data-table tr:last-child td { border-bottom: none; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.badge-critical { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,59,92,0.3); }
+.badge-high { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(255,140,66,0.3); }
+.badge-medium { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(255,209,102,0.3); }
+.badge-low { background: var(--green-dim); color: var(--green); border: 1px solid rgba(6,214,160,0.3); }
+
+.sev-bar { display: flex; align-items: center; gap: 10px; }
+.sev-track { flex: 1; height: 5px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; min-width: 80px; }
+.sev-fill { height: 100%; border-radius: 99px; }
+.sev-num { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; width: 30px; }
+
+.respond-btn {
+  background: transparent;
+  color: var(--blue-light);
+  border: 1px solid rgba(26,110,245,0.3);
+  padding: 6px 14px; border-radius: 7px;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+.respond-btn:hover { background: var(--blue-glow); border-color: var(--blue-accent); color: white; }
+
+/* TIMELINE */
+.timeline { display: flex; flex-direction: column; }
+.tl-row { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.tl-row:last-child { border-bottom: none; }
+.tl-left { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.tl-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.tl-line { flex: 1; width: 1px; background: var(--border); }
+.tl-content { flex: 1; padding-top: 4px; }
+.tl-title { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; line-height: 1.5; }
+.tl-meta { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+/* ===== AI INSIGHTS PAGE ===== */
+.insight-intro {
+  background: linear-gradient(135deg, rgba(26,110,245,0.12), rgba(0,212,255,0.06));
+  border: 1px solid rgba(26,110,245,0.2);
+  border-radius: 16px;
+  padding: 22px 26px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.intro-left { display: flex; align-items: center; gap: 16px; }
+.intro-icon { font-size: 36px; }
+.intro-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.intro-sub { font-size: 13px; color: var(--text-dim); }
+.model-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.model-pill {
+  background: var(--blue-glow);
+  border: 1px solid rgba(26,110,245,0.25);
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 11.5px; color: var(--blue-light); font-weight: 600;
+}
+
+.insight-cards { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 20px; }
+
+.insight-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+.insight-card::after {
+  content: 'Click to expand →';
+  position: absolute;
+  bottom: 14px; right: 16px;
+  font-size: 10.5px; color: var(--text-faint);
+  font-weight: 600; letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+.insight-card:hover { transform: translateY(-3px); border-color: var(--border-bright); box-shadow: 0 8px 32px rgba(26,110,245,0.12); }
+.insight-card:hover::after { color: var(--blue-light); }
+
+.ic-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.ic-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.ic-title { font-size: 14px; font-weight: 700; }
+.ic-sub { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+
+/* Risk card */
+.risk-big { font-size: 52px; font-weight: 800; color: var(--orange); line-height: 1; letter-spacing: -2px; margin-bottom: 6px; }
+.risk-desc { font-size: 12.5px; color: var(--text-dim); margin-bottom: 14px; }
+.risk-track { height: 8px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+.risk-fill { height: 100%; width: 87%; background: linear-gradient(90deg, var(--yellow), var(--orange), var(--red)); border-radius: 99px; animation: fillIn 1.2s ease; }
+@keyframes fillIn { from{width:0} }
+
+/* Sentiment card */
+.sent-list { display: flex; flex-direction: column; gap: 12px; }
+.sent-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.sent-emoji { font-size: 16px; width: 22px; }
+.sent-label { width: 70px; color: var(--text-dim); font-size: 12.5px; }
+.sent-track { flex: 1; height: 7px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+.sent-fill { height: 100%; border-radius: 99px; }
+.sent-pct { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); width: 32px; text-align: right; }
+
+/* Locations card */
+.loc-list { display: flex; flex-direction: column; gap: 10px; }
+.loc-row { display: flex; align-items: center; justify-content: space-between; }
+.loc-name { display: flex; align-items: center; gap: 9px; font-size: 13.5px; font-weight: 500; }
+.loc-pin { font-size: 16px; }
+.loc-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.loc-bar { height: 4px; border-radius: 99px; }
+
+/* Recs card */
+.rec-list { display: flex; flex-direction: column; gap: 10px; }
+.rec-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: rgba(26,110,245,0.06);
+  border: 1px solid rgba(26,110,245,0.12);
+  border-radius: 10px;
+  padding: 11px 13px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.rec-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--blue-accent);
+  color: white; font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+
+/* AI CHAT */
+.chat-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+.chat-top {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.chat-top-left { display: flex; align-items: center; gap: 10px; }
+.chat-ai-icon { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--blue-accent), var(--cyan)); display: flex; align-items: center; justify-content: center; font-size: 15px; }
+.chat-ai-name { font-size: 14px; font-weight: 700; }
+.chat-ai-status { font-size: 11px; color: var(--green); }
+.chat-messages { padding: 20px; display: flex; flex-direction: column; gap: 14px; max-height: 320px; overflow-y: auto; }
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+.msg { max-width: 80%; }
+.msg.user { align-self: flex-end; }
+.msg.ai { align-self: flex-start; }
+.msg-bubble { padding: 12px 16px; border-radius: 14px; font-size: 13.5px; line-height: 1.65; }
+.user .msg-bubble { background: var(--blue-accent); color: white; border-radius: 14px 14px 4px 14px; }
+.ai .msg-bubble { background: var(--navy-700); border: 1px solid var(--border); border-radius: 14px 14px 14px 4px; }
+.msg-time { font-size: 10px; color: var(--text-faint); margin-top: 4px; padding: 0 4px; font-family: 'JetBrains Mono', monospace; }
+.user .msg-time { text-align: right; }
+
+.typing-indicator { display: flex; gap: 4px; align-items: center; padding: 14px 16px; }
+.typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-dim); animation: typingBounce 1.2s ease-in-out infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce { 0%,100%{transform:translateY(0);opacity:0.4} 50%{transform:translateY(-5px);opacity:1} }
+
+.chat-input-area {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px;
+}
+.chat-input {
+  flex: 1; background: var(--navy-700);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 11px 16px; color: var(--text);
+  font-family: 'Outfit', sans-serif; font-size: 13.5px;
+  outline: none; transition: border-color 0.2s;
+}
+.chat-input:focus { border-color: var(--blue-accent); }
+.chat-send {
+  background: var(--blue-accent); color: white; border: none;
+  width: 42px; height: 42px; border-radius: 10px;
+  cursor: pointer; font-size: 17px; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 16px rgba(26,110,245,0.3);
+}
+.chat-send:hover { background: var(--blue-light); box-shadow: 0 0 24px rgba(26,110,245,0.5); }
+
+/* ===== RESPONSE CENTER ===== */
+.response-layout { display: grid; grid-template-columns: 290px 1fr; gap: 18px; }
+.crisis-panel-head { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); font-weight: 700; margin-bottom: 12px; }
+.crisis-list { display: flex; flex-direction: column; gap: 8px; }
+.crisis-item {
+  background: var(--navy-700); border: 1px solid var(--border);
+  border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.2s;
+}
+.crisis-item:hover, .crisis-item.sel { border-color: var(--border-bright); background: rgba(26,110,245,0.08); }
+.crisis-item-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+.crisis-item-name { font-size: 13px; font-weight: 600; }
+.crisis-item-time { font-size: 10px; color: var(--text-faint); font-family: 'JetBrains Mono', monospace; }
+.crisis-item-meta { font-size: 11.5px; color: var(--text-dim); }
+
+.resp-panel {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 26px; backdrop-filter: blur(10px);
+}
+.resp-head { margin-bottom: 22px; }
+.resp-title { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 6px; }
+.resp-meta { font-size: 12px; color: var(--text-dim); display: flex; gap: 16px; flex-wrap: wrap; }
+.resp-meta-item { display: flex; align-items: center; gap: 5px; }
+
+.resp-tabs { display: flex; gap: 2px; margin-bottom: 22px; background: var(--navy-700); border-radius: 10px; padding: 4px; }
+.rtab {
+  flex: 1; text-align: center; padding: 9px 14px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  color: var(--text-dim); border-radius: 8px; transition: all 0.2s;
+}
+.rtab:hover { color: var(--text); }
+.rtab.active { background: var(--blue-accent); color: white; box-shadow: 0 0 16px rgba(26,110,245,0.3); }
+
+.gen-textarea {
+  width: 100%; background: var(--navy-700); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px; color: var(--text);
+  font-family: 'Outfit', sans-serif; font-size: 14px; line-height: 1.75;
+  resize: vertical; min-height: 200px; outline: none; transition: border-color 0.2s;
+}
+.gen-textarea:focus { border-color: var(--blue-accent); }
+
+.btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue-accent), #1d4ed8);
+  color: white; border: none; padding: 11px 22px; border-radius: 10px;
+  font-size: 13.5px; font-weight: 700; cursor: pointer;
+  font-family: 'Outfit', sans-serif; transition: all 0.2s;
+  box-shadow: 0 0 20px rgba(26,110,245,0.3);
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { box-shadow: 0 0 32px rgba(26,110,245,0.5); transform: translateY(-1px); }
+.btn-outline {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border); padding: 11px 22px; border-radius: 10px;
+  font-size: 13.5px; font-weight: 600; cursor: pointer;
+  font-family: 'Outfit', sans-serif; transition: all 0.2s;
+}
+.btn-outline:hover { border-color: var(--border-bright); }
+
+.action-items { display: flex; flex-direction: column; gap: 10px; }
+.action-item {
+  display: flex; align-items: flex-start; gap: 13px;
+  background: var(--navy-700); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.action-priority { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.action-body { flex: 1; }
+.action-title { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+.action-time { font-size: 11.5px; color: var(--text-dim); }
+
+/* ===== ANALYTICS ===== */
+.analytics-kpi { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-bottom: 20px; }
+.a-kpi { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; backdrop-filter: blur(10px); }
+.a-kpi-val { font-size: 40px; font-weight: 800; letter-spacing: -1px; margin: 8px 0 4px; }
+.a-kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-dim); font-weight: 700; }
+.a-kpi-change { font-size: 12px; margin-top: 4px; font-weight: 600; }
+
+.analytics-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
+
+.bar-chart-area { display: flex; align-items: flex-end; gap: 8px; height: 150px; padding: 0 4px; margin-top: 16px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.bar-fill { width: 100%; border-radius: 7px 7px 0 0; transition: height 1s cubic-bezier(0.4,0,0.2,1); min-height: 4px; }
+.bar-lbl { font-size: 10.5px; color: var(--text-faint); font-family: 'JetBrains Mono', monospace; }
+
+.perf-list { display: flex; flex-direction: column; gap: 0; }
+.perf-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.perf-row:last-child { border-bottom: none; }
+.perf-metric { font-size: 13.5px; color: var(--text-dim); }
+.perf-val { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; }
+.perf-check { width: 22px; height: 22px; border-radius: 50%; background: var(--green-dim); border: 1px solid rgba(6,214,160,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+
+.type-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-top: 4px; }
+.type-card {
+  background: var(--navy-700); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px; text-align: center;
+}
+.type-num { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; margin: 4px 0; }
+.type-lbl { font-size: 11.5px; color: var(--text-dim); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(4,13,26,0.85);
+  backdrop-filter: blur(8px);
+  z-index: 500;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.open { display: flex; animation: overlayIn 0.2s ease; }
+@keyframes overlayIn { from{opacity:0} to{opacity:1} }
+
+.modal {
+  background: var(--navy-800);
+  border: 1px solid rgba(26,110,245,0.2);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(26,110,245,0.1);
+  animation: modalIn 0.3s cubic-bezier(0.4,0,0.2,1);
+  scrollbar-width: thin;
+}
+@keyframes modalIn { from{opacity:0;transform:scale(0.94) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+.modal-header {
+  padding: 26px 28px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: flex-start; justify-content: space-between;
+  position: sticky; top: 0; background: var(--navy-800); border-radius: 20px 20px 0 0; z-index: 2;
+}
+.modal-title-area { display: flex; align-items: center; gap: 14px; }
+.modal-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.modal-title { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
+.modal-subtitle { font-size: 12.5px; color: var(--text-dim); margin-top: 3px; }
+.modal-close {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: var(--navy-700); border: 1px solid var(--border);
+  color: var(--text-dim); cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.modal-close:hover { background: var(--red-dim); color: var(--red); border-color: rgba(255,59,92,0.3); }
+
+.modal-body { padding: 26px 28px; }
+
+/* Modal content pieces */
+.modal-stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 22px; }
+.modal-stat { background: var(--navy-700); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+.modal-stat-val { font-size: 26px; font-weight: 800; margin: 4px 0; }
+.modal-stat-lbl { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.modal-chart-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); font-weight: 700; margin-bottom: 10px; }
+
+.gauge-wrap { display: flex; flex-direction: column; align-items: center; padding: 10px 0 20px; }
+.gauge-num { font-size: 72px; font-weight: 800; letter-spacing: -3px; }
+.gauge-track { width: 100%; height: 12px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; margin: 12px 0 8px; }
+.gauge-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--green), var(--yellow), var(--orange), var(--red)); }
+.gauge-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-faint); width: 100%; font-family: 'JetBrains Mono', monospace; }
+
+.modal-insight-box {
+  background: rgba(26,110,245,0.06); border: 1px solid rgba(26,110,245,0.15);
+  border-radius: 12px; padding: 16px 18px; margin-top: 18px;
+}
+.modal-insight-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--blue-light); font-weight: 700; margin-bottom: 10px; }
+.modal-insight-item { font-size: 13.5px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+.modal-insight-item:last-child { border-bottom: none; }
+
+.sent-modal { display: flex; flex-direction: column; gap: 16px; }
+.sent-modal-row { display: flex; align-items: center; gap: 14px; }
+.sent-modal-label { width: 80px; font-size: 13px; font-weight: 600; }
+.sent-modal-track { flex: 1; height: 10px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+.sent-modal-fill { height: 100%; border-radius: 99px; }
+.sent-modal-pct { width: 42px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 28px; right: 28px; z-index: 999;
+  background: var(--navy-700);
+  border: 1px solid rgba(6,214,160,0.3);
+  border-left: 3px solid var(--green);
+  border-radius: 12px; padding: 14px 18px;
+  max-width: 300px; font-size: 13px;
+  transform: translateX(130%); transition: transform 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateX(0); }
+.toast-title { font-weight: 700; margin-bottom: 3px; }
+.toast-msg { color: var(--text-dim); font-size: 12px; }
+
+/* SPINNER */
+.spin { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.25); border-top-color: white; border-radius: 50%; animation: spinIt 0.6s linear infinite; display: inline-block; }
+@keyframes spinIt { to{transform:rotate(360deg)} }
+
+/* SCAN PULSE ANIMATION */
+.scanning-ring {
+  position: absolute; inset: -6px; border-radius: 50%;
+  border: 2px solid var(--cyan);
+  animation: scanRing 1.2s ease-out infinite;
+  opacity: 0;
+}
+@keyframes scanRing { 0%{opacity:0.8;transform:scale(0.9)} 100%{opacity:0;transform:scale(1.6)} }
+
+/* PLATFORM CARD HOVER */
+.plat-card { cursor: pointer; }
+.plat-card:hover { background: rgba(26,110,245,0.08); border-color: var(--border-bright); transform: translateY(-2px); transition: all 0.2s; }
+
+/* NEW ALERT MODAL STYLES */
+.alert-modal-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px; border-radius: 12px;
+  background: var(--navy-700); border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.2s; margin-bottom: 8px;
+}
+.alert-modal-item:hover { border-color: var(--border-bright); }
+
+/* SCAN PROGRESS BAR */
+.scan-progress { height: 3px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+.scan-progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue-accent), var(--cyan)); border-radius: 99px; transition: width 0.3s ease; }
+
+/* FILTER BUTTONS */
+.filter-btn {
+  background: var(--navy-700); border: 1px solid var(--border);
+  color: var(--text-dim); padding: 6px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: 'Outfit', sans-serif; transition: all 0.2s;
+}
+.filter-btn.active, .filter-btn:hover {
+  background: var(--blue-glow); border-color: var(--blue-accent);
+  color: var(--blue-light);
+}
+
+/* PLATFORM DETAIL MODAL */
+.plat-detail-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+.plat-detail-stat { background: var(--navy-700); border: 1px solid var(--border); border-radius: 12px; padding: 14px; text-align: center; }
+.plat-detail-num { font-size: 28px; font-weight: 800; margin: 4px 0; }
+.plat-detail-lbl { font-size: 11px; color: var(--text-dim); }
+
+/* PUBLISH CONFIRMATION */
+.publish-steps { display: flex; flex-direction: column; gap: 10px; }
+.pub-step { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--navy-700); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; }
+.pub-step-icon { font-size: 18px; }
+.pub-step-check { margin-left: auto; width: 20px; height: 20px; border-radius: 50%; background: var(--green-dim); border: 1px solid rgba(6,214,160,0.3); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--green); }
+
+/* TREND SPARKLINE */
+.sparkline-wrap { display: flex; align-items: flex-end; gap: 3px; height: 32px; }
+.spark-bar { flex: 1; border-radius: 2px 2px 0 0; min-height: 3px; }
+
+/* APPROVE BUTTON ANIMATION */
+@keyframes approveFlash { 0%,100%{box-shadow:0 0 20px rgba(6,214,160,0.3)} 50%{box-shadow:0 0 40px rgba(6,214,160,0.7)} }
+.btn-approve { background: linear-gradient(135deg, var(--green), #059669); animation: approveFlash 2s infinite; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo-area">
+    <div class="logo-wrap">
+      <div class="logo-mark">🚨</div>
+      <div>
+        <div class="logo-name">Social<span>Pulse</span> AI</div>
+        <div class="logo-sub">Crisis Intelligence Platform</div>
+      </div>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="navigate('dashboard',this)">
+      <div class="nav-icon-wrap">📊</div> Dashboard
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="navigate('insights',this)">
+      <div class="nav-icon-wrap">🤖</div> AI Insights
+    </div>
+    <div class="nav-section-label">Operations</div>
+    <div class="nav-item" onclick="navigate('response',this)">
+      <div class="nav-icon-wrap">🎯</div> Response Center
+    </div>
+    <div class="nav-item" onclick="navigate('analytics',this)">
+      <div class="nav-icon-wrap">📈</div> Analytics
+    </div>
+    <div class="nav-section-label">Tools</div>
+    <div class="nav-item" onclick="navigate('map',this)">
+      <div class="nav-icon-wrap">🗺️</div> Crisis Map
+    </div>
+    <div class="nav-item" onclick="navigate('alerts',this)">
+      <div class="nav-icon-wrap">🔔</div> Keyword Alerts
+    </div>
+    <div class="nav-item" onclick="navigate('reddit',this)">
+      <div class="nav-icon-wrap">🟠</div> Reddit Feed
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="live-indicator">
+      <div class="live-dot"></div>
+      <div>
+        <div class="live-text">LIVE</div>
+        <div class="live-sub">Monitoring active</div>
+      </div>
+    </div>
+    <div class="system-status">
+      <div class="status-row"><span>Model Accuracy</span><span class="status-val">98.5%</span></div>
+      <div class="status-row"><span>API Latency</span><span class="status-val">2.4s</span></div>
+      <div class="status-row"><span>Sources</span><span class="status-val">5 active</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="page-title" id="pageTitle">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="alert-pill" onclick="openModal('alerts')"><div class="alert-dot"></div> 3 Active Alerts</div>
+      <div class="clock-display" id="clock">--:--:-- --</div>
+      <button class="topbar-btn" id="scanBtn" onclick="runScan(this)"><span id="scanBtnText">🔍 Scan Now</span></button>
+      <button class="topbar-btn" style="background:transparent;border:1px solid var(--border-bright);color:var(--blue-light)" onclick="navigate('response', document.querySelectorAll('.nav-item')[2])">+ Respond Now</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-top">
+          <div class="kpi-icon blue">📱</div>
+          <div class="kpi-trend up">↑ Live</div>
+        </div>
+        <div class="kpi-label">Total Posts Monitored</div>
+        <div class="kpi-value" id="liveCount">2,847</div>
+        <div class="kpi-sub">Across Reddit, YouTube, Twitter</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-top">
+          <div class="kpi-icon red">🚨</div>
+          <div class="kpi-trend down">Critical</div>
+        </div>
+        <div class="kpi-label">Active Crises</div>
+        <div class="kpi-value" style="color:var(--red)">3</div>
+        <div class="kpi-sub">Mumbai · Delhi · Kolkata</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-top">
+          <div class="kpi-icon orange">🎯</div>
+          <div class="kpi-trend down">High Risk</div>
+        </div>
+        <div class="kpi-label">Risk Level</div>
+        <div class="kpi-value" style="color:var(--orange)">HIGH</div>
+        <div class="kpi-sub">Predictive Score: 87/100</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-top">
+          <div class="kpi-icon green">⚡</div>
+          <div class="kpi-trend up">↓ Improved</div>
+        </div>
+        <div class="kpi-label">Avg Response Time</div>
+        <div class="kpi-value" style="color:var(--green)">2.4s</div>
+        <div class="kpi-sub">↓ 0.3s vs last week</div>
+      </div>
+    </div>
+
+    <div class="platform-grid">
+      <div class="plat-card" onclick="openModal('plat-reddit')">
+        <div class="plat-left">
+          <span class="plat-emoji">🟠</span>
+          <div>
+            <div class="plat-name">Reddit</div>
+            <div class="plat-status spike">⚡ Spike detected</div>
+          </div>
+        </div>
+        <div class="plat-count" style="color:var(--orange)">1,204</div>
+      </div>
+      <div class="plat-card" onclick="openModal('plat-youtube')">
+        <div class="plat-left">
+          <span class="plat-emoji">🔴</span>
+          <div>
+            <div class="plat-name">YouTube</div>
+            <div class="plat-status steady">→ Steady flow</div>
+          </div>
+        </div>
+        <div class="plat-count">891</div>
+      </div>
+      <div class="plat-card" onclick="openModal('plat-twitter')">
+        <div class="plat-left">
+          <span class="plat-emoji">🐦</span>
+          <div>
+            <div class="plat-name">Twitter / X</div>
+            <div class="plat-status trending">↑ Trending now</div>
+          </div>
+        </div>
+        <div class="plat-count" style="color:var(--red)">752</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title"><span class="icon">🚨</span> Active Crisis Alerts</div>
+        <span class="badge badge-critical">● LIVE MONITORING</span>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Type</th><th>Risk Level</th><th>Location</th>
+            <th>Severity</th><th>Reports</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🌊 Flood Misinformation</td>
+            <td><span class="badge badge-critical">CRITICAL</span></td>
+            <td>📍 Mumbai</td>
+            <td><div class="sev-bar"><div class="sev-track"><div class="sev-fill" style="width:92%;background:var(--red)"></div></div><span class="sev-num">92%</span></div></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-weight:700">1,204</td>
+            <td><button class="respond-btn" onclick="goRespond('mumbai')">Respond →</button></td>
+          </tr>
+          <tr>
+            <td>⚡ Power Outage Panic</td>
+            <td><span class="badge badge-high">HIGH</span></td>
+            <td>📍 Delhi</td>
+            <td><div class="sev-bar"><div class="sev-track"><div class="sev-fill" style="width:71%;background:var(--orange)"></div></div><span class="sev-num">71%</span></div></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-weight:700">891</td>
+            <td><button class="respond-btn" onclick="goRespond('delhi')">Respond →</button></td>
+          </tr>
+          <tr>
+            <td>🦠 Health Rumor Spread</td>
+            <td><span class="badge badge-medium">MEDIUM</span></td>
+            <td>📍 Kolkata</td>
+            <td><div class="sev-bar"><div class="sev-track"><div class="sev-fill" style="width:48%;background:var(--yellow)"></div></div><span class="sev-num">48%</span></div></td>
+            <td style="font-family:'JetBrains Mono',monospace;font-weight:700">452</td>
+            <td><button class="respond-btn" onclick="goRespond('kolkata')">Respond →</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title"><span class="icon">📡</span> Live Activity Feed</div>
+        <span style="font-size:11px;color:var(--text-faint);font-family:'JetBrains Mono',monospace">Auto-refreshing</span>
+      </div>
+      <div class="timeline">
+        <div class="tl-row">
+          <div class="tl-left"><div class="tl-icon" style="background:var(--red-dim);color:var(--red)">🔴</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Spike detected — Mumbai flood-related posts up 340% in 30 min</div>
+            <div class="tl-meta">2 min ago · Reddit + Twitter · 1,204 mentions</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-left"><div class="tl-icon" style="background:var(--orange-dim);color:var(--orange)">⚡</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">Sentiment shifted negative in Delhi — power outage hashtag trending nationwide</div>
+            <div class="tl-meta">8 min ago · Twitter · 891 mentions</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-left"><div class="tl-icon" style="background:var(--blue-glow);color:var(--blue-light)">🤖</div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div class="tl-title">AI response draft auto-generated for Mumbai crisis — awaiting approval</div>
+            <div class="tl-meta">12 min ago · SocialPulse AI System</div>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-left"><div class="tl-icon" style="background:var(--yellow-dim);color:var(--yellow)">🦠</div></div>
+          <div class="tl-content">
+            <div class="tl-title">Health misinformation cluster identified in Kolkata — 452 posts from 3 seed accounts</div>
+            <div class="tl-meta">19 min ago · YouTube · Low-medium risk</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI INSIGHTS -->
+  <div class="page" id="page-insights">
+    <div class="insight-intro">
+      <div class="intro-left">
+        <div class="intro-icon">🤖</div>
+        <div>
+          <div class="intro-title">AI-Powered Insights Engine</div>
+          <div class="intro-sub">Real-time analysis using BERT/RoBERTa · GPT Crisis Classifier · Anomaly Detection</div>
+        </div>
+      </div>
+      <div class="model-pills">
+        <div class="model-pill">BERT Sentiment</div>
+        <div class="model-pill">GPT Classifier</div>
+        <div class="model-pill">Time-series Anomaly</div>
+      </div>
+    </div>
+
+    <div class="insight-cards">
+      <!-- CARD 1: Risk Score -->
+      <div class="insight-card" onclick="openModal('risk')">
+        <div class="ic-header">
+          <div class="ic-icon" style="background:var(--orange-dim)">🎯</div>
+          <div>
+            <div class="ic-title">Predictive Risk Score</div>
+            <div class="ic-sub">ML-based 6-hour forecast</div>
+          </div>
+        </div>
+        <div class="risk-big">87%</div>
+        <div class="risk-desc">High probability of escalation in next 6 hours</div>
+        <div class="risk-track"><div class="risk-fill"></div></div>
+      </div>
+
+      <!-- CARD 2: Sentiment -->
+      <div class="insight-card" onclick="openModal('sentiment')">
+        <div class="ic-header">
+          <div class="ic-icon" style="background:var(--blue-glow)">💬</div>
+          <div>
+            <div class="ic-title">Sentiment Analysis</div>
+            <div class="ic-sub">BERT/RoBERTa · 2,847 posts</div>
+          </div>
+        </div>
+        <div class="sent-list">
+          <div class="sent-row">
+            <span class="sent-emoji">😡</span>
+            <span class="sent-label">Negative</span>
+            <div class="sent-track"><div class="sent-fill" style="width:55%;background:var(--red)"></div></div>
+            <span class="sent-pct">55%</span>
+          </div>
+          <div class="sent-row">
+            <span class="sent-emoji">😐</span>
+            <span class="sent-label">Neutral</span>
+            <div class="sent-track"><div class="sent-fill" style="width:25%;background:var(--text-dim)"></div></div>
+            <span class="sent-pct">25%</span>
+          </div>
+          <div class="sent-row">
+            <span class="sent-emoji">😊</span>
+            <span class="sent-label">Positive</span>
+            <div class="sent-track"><div class="sent-fill" style="width:20%;background:var(--green)"></div></div>
+            <span class="sent-pct">20%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: Locations -->
+      <div class="insight-card" onclick="openModal('locations')">
+        <div class="ic-header">
+          <div class="ic-icon" style="background:var(--red-dim)">🌍</div>
+          <div>
+            <div class="ic-title">High-Risk Locations</div>
+            <div class="ic-sub">Geo-clustering active</div>
+          </div>
+        </div>
+        <div class="loc-list">
+          <div class="loc-row">
+            <div class="loc-name"><span class="loc-pin">📍</span> Mumbai</div>
+            <span class="badge badge-critical">CRITICAL</span>
+          </div>
+          <div class="loc-row">
+            <div class="loc-name"><span class="loc-pin">📍</span> Delhi</div>
+            <span class="badge badge-high">HIGH</span>
+          </div>
+          <div class="loc-row">
+            <div class="loc-name"><span class="loc-pin">📍</span> Kolkata</div>
+            <span class="badge badge-medium">MEDIUM</span>
+          </div>
+          <div class="loc-row">
+            <div class="loc-name"><span class="loc-pin">📍</span> Chennai</div>
+            <span class="badge badge-low">WATCH</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4: AI Recommendations -->
+      <div class="insight-card" onclick="openModal('recommendations')">
+        <div class="ic-header">
+          <div class="ic-icon" style="background:var(--green-dim)">💡</div>
+          <div>
+            <div class="ic-title">AI Recommendations</div>
+            <div class="ic-sub">LLM-generated action items</div>
+          </div>
+        </div>
+        <div class="rec-list">
+          <div class="rec-item"><div class="rec-num">1</div>Deploy emergency resources to Mumbai</div>
+          <div class="rec-item"><div class="rec-num">2</div>Issue official power advisory for Delhi</div>
+          <div class="rec-item"><div class="rec-num">3</div>Escalate misinformation monitoring in Kolkata</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI CHAT -->
+    <div class="chat-wrap">
+      <div class="chat-top">
+        <div class="chat-top-left">
+          <div class="chat-ai-icon">🤖</div>
+          <div>
+            <div class="chat-ai-name">AI Crisis Analyst</div>
+            <div class="chat-ai-status">● Online · Powered by Claude AI</div>
+          </div>
+        </div>
+        <div class="model-pill">claude-sonnet</div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg ai">
+          <div class="msg-bubble">Hello! I'm your AI Crisis Analyst. I've analyzed <strong>2,847 posts</strong> across Reddit, YouTube, and Twitter. Currently tracking <strong>3 active crises</strong> — Mumbai is the highest priority at CRITICAL level. How can I help you respond?</div>
+          <div class="msg-time">Just now</div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input class="chat-input" id="chatInput" placeholder="Ask about any crisis, location, sentiment, or recommendation..." onkeydown="if(event.key==='Enter')sendChat()"/>
+        <button class="chat-send" onclick="sendChat()">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESPONSE CENTER -->
+  <div class="page" id="page-response">
+    <div class="response-layout">
+      <div>
+        <div class="crisis-panel-head">Active Crises (3)</div>
+        <div class="crisis-list">
+          <div class="crisis-item sel" onclick="selectCrisis(this,'mumbai')">
+            <div class="crisis-item-top">
+              <div class="crisis-item-name">🌊 Mumbai Flood Info</div>
+              <span class="badge badge-critical" style="font-size:10px">CRITICAL</span>
+            </div>
+            <div class="crisis-item-meta">1,204 posts · 2h ago · Reddit, Twitter</div>
+          </div>
+          <div class="crisis-item" onclick="selectCrisis(this,'delhi')">
+            <div class="crisis-item-top">
+              <div class="crisis-item-name">⚡ Delhi Power Panic</div>
+              <span class="badge badge-high" style="font-size:10px">HIGH</span>
+            </div>
+            <div class="crisis-item-meta">891 posts · 3h ago · Twitter</div>
+          </div>
+          <div class="crisis-item" onclick="selectCrisis(this,'kolkata')">
+            <div class="crisis-item-top">
+              <div class="crisis-item-name">🦠 Kolkata Health Rumor</div>
+              <span class="badge badge-medium" style="font-size:10px">MEDIUM</span>
+            </div>
+            <div class="crisis-item-meta">452 posts · 4h ago · YouTube</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="resp-panel">
+        <div class="resp-head">
+          <div class="resp-title" id="rTitle">🌊 Mumbai Flood Misinformation</div>
+          <div class="resp-meta">
+            <span class="resp-meta-item">📍 Mumbai</span>
+            <span class="resp-meta-item">⏱ Detected 2h ago</span>
+            <span class="resp-meta-item">📊 1,204 posts</span>
+            <span class="resp-meta-item">🔴 Peak: 340/hr</span>
+          </div>
+        </div>
+        <div class="resp-tabs">
+          <div class="rtab active" onclick="switchRTab(this,'rsummary')">📋 AI Summary</div>
+          <div class="rtab" onclick="switchRTab(this,'rdraft')">✍️ Response Draft</div>
+          <div class="rtab" onclick="switchRTab(this,'ractions')">✅ Action Plan</div>
+        </div>
+
+        <div id="rsummary">
+          <div style="background:var(--navy-700);border:1px solid var(--border);border-radius:12px;padding:18px;font-size:14px;line-height:1.8;margin-bottom:16px;" id="summaryBox">
+            A significant spike in misinformation about a flood disaster was detected in Mumbai starting at approximately 16:30 IST. The posts claim water levels have reached dangerous heights in Kurla, Dharavi, and Andheri. Sentiment shows 78% negative with panic indicators. Cross-platform verification indicates the claims are exaggerated — while rainfall is above normal, severity is being amplified. Immediate official communication is strongly recommended.
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="aiGenSummary()"><span id="sumSpinner"></span>🔄 Regenerate with AI</button>
+            <button class="btn-outline" onclick="copyText('summaryBox')">📋 Copy</button>
+          </div>
+        </div>
+
+        <div id="rdraft" style="display:none">
+          <textarea class="gen-textarea" id="draftBox">🔔 OFFICIAL ADVISORY — Municipal Corporation of Mumbai
+
+We are aware of social media posts circulating about severe flooding in Kurla, Dharavi, and Andheri areas. Following assessment by our disaster management teams:
+
+✅ Water levels are ELEVATED but NOT at the crisis levels being reported online
+✅ Emergency response teams are deployed and monitoring all vulnerable areas
+✅ Residents in Zone A should follow standard monsoon safety precautions
+✅ NDRF teams are on standby as a precautionary measure
+
+Please rely ONLY on official channels for updates. Do NOT share unverified information.
+
+📞 Helpline: 1916 | Emergency: 112
+— Mumbai Disaster Management Authority</textarea>
+          <div class="btn-row">
+            <button class="btn-primary" onclick="aiGenDraft()"><span id="draftSpinner"></span>🤖 Regenerate with AI</button>
+            <button class="btn-outline" onclick="publishDraft()">📤 Publish</button>
+            <button class="btn-outline" onclick="copyText('draftBox')">📋 Copy</button>
+          </div>
+        </div>
+
+        <div id="ractions" style="display:none">
+          <div class="action-items">
+            <div class="action-item">
+              <div class="action-priority" style="background:var(--red-dim);color:var(--red)">🚒</div>
+              <div class="action-body">
+                <div class="action-title">Deploy field verification team to Kurla and Dharavi</div>
+                <div class="action-time">⏱ Immediate · Priority: Critical</div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="action-priority" style="background:var(--orange-dim);color:var(--orange)">📢</div>
+              <div class="action-body">
+                <div class="action-title">Issue official advisory on all verified social channels</div>
+                <div class="action-time">⏱ Within 30 minutes · Priority: High</div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="action-priority" style="background:var(--yellow-dim);color:var(--yellow)">📡</div>
+              <div class="action-body">
+                <div class="action-title">Coordinate with Twitter/Meta to flag misinformation posts</div>
+                <div class="action-time">⏱ Within 1 hour · Priority: Medium</div>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="action-priority" style="background:var(--blue-glow);color:var(--blue-light)">📊</div>
+              <div class="action-body">
+                <div class="action-title">Monitor sentiment shifts every 15 minutes</div>
+                <div class="action-time">⏱ Ongoing · Priority: Standard</div>
+              </div>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:18px">
+            <button class="btn-primary btn-approve" onclick="approveActionPlan()">✅ Approve & Execute Plan</button>
+            <button class="btn-outline" onclick="shareWithTeam()">📤 Share with Team</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS -->
+  <div class="page" id="page-analytics">
+    <div class="analytics-kpi">
+      <div class="a-kpi">
+        <div class="a-kpi-label">Detection Accuracy</div>
+        <div class="a-kpi-val" style="color:var(--green)">98.5%</div>
+        <div class="a-kpi-change" style="color:var(--green)">↑ +1.2% vs last month</div>
+      </div>
+      <div class="a-kpi">
+        <div class="a-kpi-label">Avg Response Time</div>
+        <div class="a-kpi-val" style="color:var(--blue-light)">2.4s</div>
+        <div class="a-kpi-change" style="color:var(--green)">↓ 0.3s improvement</div>
+      </div>
+      <div class="a-kpi">
+        <div class="a-kpi-label">Crises Resolved</div>
+        <div class="a-kpi-val">47</div>
+        <div class="a-kpi-change" style="color:var(--green)">↑ +12 this week</div>
+      </div>
+    </div>
+
+    <div class="analytics-grid">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title"><span class="icon">📊</span> Weekly Crisis Volume</div>
+          <div style="display:flex;gap:6px">
+            <button class="filter-btn active" onclick="filterChart(this,'week')">Week</button>
+            <button class="filter-btn" onclick="filterChart(this,'month')">Month</button>
+            <button class="filter-btn" onclick="filterChart(this,'custom')">Custom</button>
+          </div>
+        </div>
+        <div class="bar-chart-area" id="barChart">
+          <div class="bar-col"><div class="bar-fill" style="height:40%;background:var(--blue-accent)"></div><div class="bar-lbl">Mon</div></div>
+          <div class="bar-col"><div class="bar-fill" style="height:65%;background:var(--blue-accent)"></div><div class="bar-lbl">Tue</div></div>
+          <div class="bar-col"><div class="bar-fill" style="height:30%;background:var(--blue-accent)"></div><div class="bar-lbl">Wed</div></div>
+          <div class="bar-col"><div class="bar-fill" style="height:80%;background:var(--orange)"></div><div class="bar-lbl">Thu</div></div>
+          <div class="bar-col"><div class="bar-fill" style="height:55%;background:var(--blue-accent)"></div><div class="bar-lbl">Fri</div></div>
+          <div class="bar-col"><div class="bar-fill" style="height:90%;background:var(--red)"></div><div class="bar-lbl">Sat</div></div>
+          <div class="bar-col"><div class="bar-fill" style="height:100%;background:var(--red)"></div><div class="bar-lbl">Sun</div></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title"><span class="icon">📋</span> Weekly Performance</div>
+        <div class="perf-list">
+          <div class="perf-row"><span class="perf-metric">Crises Detected</span><span class="perf-val">47</span><div class="perf-check">✓</div></div>
+          <div class="perf-row"><span class="perf-metric">False Positives</span><span class="perf-val">3</span><div class="perf-check">✓</div></div>
+          <div class="perf-row"><span class="perf-metric">Avg Response</span><span class="perf-val">2.4s</span><div class="perf-check">✓</div></div>
+          <div class="perf-row"><span class="perf-metric">F1 Score</span><span class="perf-val">0.972</span><div class="perf-check">✓</div></div>
+          <div class="perf-row"><span class="perf-metric">Platforms</span><span class="perf-val">5</span><div class="perf-check">✓</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:20px">
+      <div class="section-title"><span class="icon">🏷️</span> Crisis Type Breakdown</div>
+      <div class="type-grid" style="margin-top:16px">
+        <div class="type-card"><div style="font-size:22px">🌊</div><div class="type-num" style="color:var(--red)">18</div><div class="type-lbl">Natural Disaster</div></div>
+        <div class="type-card"><div style="font-size:22px">📰</div><div class="type-num" style="color:var(--orange)">14</div><div class="type-lbl">Misinformation</div></div>
+        <div class="type-card"><div style="font-size:22px">🦠</div><div class="type-num" style="color:var(--yellow)">9</div><div class="type-lbl">Health Emergency</div></div>
+        <div class="type-card"><div style="font-size:22px">⚡</div><div class="type-num" style="color:var(--blue-light)">6</div><div class="type-lbl">Infrastructure</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- ===== CRISIS MAP PAGE ===== -->
+  <div class="page" id="page-map">
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:18px;margin-bottom:18px">
+      <div class="section" style="padding:0;overflow:hidden;position:relative;min-height:520px">
+        <div style="padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <div class="section-title"><span class="icon">🗺️</span> India Crisis Hotspot Map</div>
+          <div style="display:flex;gap:8px">
+            <button class="filter-btn active" onclick="setMapView(this,'all')">All</button>
+            <button class="filter-btn" onclick="setMapView(this,'critical')">Critical</button>
+            <button class="filter-btn" onclick="setMapView(this,'high')">High</button>
+          </div>
+        </div>
+        <div id="indiaMapWrap" style="position:relative;width:100%;height:480px;background:var(--navy-800)">
+          <svg id="indiaSVG" viewBox="0 0 600 650" style="width:100%;height:100%;position:absolute;inset:0" xmlns="http://www.w3.org/2000/svg">
+            <!-- India simplified outline -->
+            <path d="M220,30 L280,25 L330,40 L370,35 L400,60 L430,55 L460,80 L480,110 L490,145 L510,170 L520,200 L515,230 L530,255 L525,280 L510,305 L505,330 L490,360 L470,390 L450,415 L420,440 L400,470 L380,495 L360,515 L340,530 L320,545 L305,560 L295,575 L285,565 L270,550 L255,535 L240,515 L225,495 L210,470 L195,445 L175,415 L155,385 L140,355 L125,325 L115,295 L110,265 L105,235 L110,205 L120,175 L130,150 L145,125 L155,100 L165,75 L185,55 Z" fill="rgba(10,31,61,0.9)" stroke="rgba(26,110,245,0.4)" stroke-width="1.5"/>
+            <!-- Kashmir/North -->
+            <path d="M220,30 L240,15 L265,10 L290,8 L315,12 L340,20 L370,35 L330,40 L280,25 Z" fill="rgba(10,31,61,0.7)" stroke="rgba(26,110,245,0.3)" stroke-width="1"/>
+            <!-- Northeast -->
+            <path d="M490,145 L520,130 L545,120 L560,140 L550,160 L530,175 L510,170 Z" fill="rgba(10,31,61,0.7)" stroke="rgba(26,110,245,0.3)" stroke-width="1"/>
+            <!-- Grid lines -->
+            <line x1="0" y1="200" x2="600" y2="200" stroke="rgba(26,110,245,0.05)" stroke-width="1"/>
+            <line x1="0" y1="350" x2="600" y2="350" stroke="rgba(26,110,245,0.05)" stroke-width="1"/>
+            <line x1="200" y1="0" x2="200" y2="650" stroke="rgba(26,110,245,0.05)" stroke-width="1"/>
+            <line x1="380" y1="0" x2="380" y2="650" stroke="rgba(26,110,245,0.05)" stroke-width="1"/>
+            <!-- State borders simplified -->
+            <path d="M280,160 L350,170 L370,230 L340,280 L280,270 L240,230 Z" fill="rgba(26,110,245,0.04)" stroke="rgba(26,110,245,0.1)" stroke-width="0.8"/>
+            <!-- Hotspot: Mumbai -->
+            <g class="map-hotspot" onclick="mapClick('mumbai')" style="cursor:pointer" id="hs-mumbai">
+              <circle cx="210" cy="390" r="32" fill="rgba(255,59,92,0.15)" class="pulse-ring"/>
+              <circle cx="210" cy="390" r="22" fill="rgba(255,59,92,0.25)"/>
+              <circle cx="210" cy="390" r="10" fill="var(--red)"/>
+              <text x="210" y="395" text-anchor="middle" fill="white" font-size="9" font-weight="700">MUM</text>
+              <text x="210" y="430" text-anchor="middle" fill="var(--red)" font-size="10" font-weight="600">CRITICAL</text>
+              <text x="210" y="443" text-anchor="middle" fill="var(--text-dim)" font-size="9">1,204 posts</text>
+            </g>
+            <!-- Hotspot: Delhi -->
+            <g class="map-hotspot" onclick="mapClick('delhi')" style="cursor:pointer" id="hs-delhi">
+              <circle cx="275" cy="165" r="26" fill="rgba(255,140,66,0.15)" class="pulse-ring2"/>
+              <circle cx="275" cy="165" r="18" fill="rgba(255,140,66,0.25)"/>
+              <circle cx="275" cy="165" r="8" fill="var(--orange)"/>
+              <text x="275" y="170" text-anchor="middle" fill="white" font-size="9" font-weight="700">DEL</text>
+              <text x="275" y="200" text-anchor="middle" fill="var(--orange)" font-size="10" font-weight="600">HIGH</text>
+              <text x="275" y="213" text-anchor="middle" fill="var(--text-dim)" font-size="9">891 posts</text>
+            </g>
+            <!-- Hotspot: Kolkata -->
+            <g class="map-hotspot" onclick="mapClick('kolkata')" style="cursor:pointer" id="hs-kolkata">
+              <circle cx="430" cy="290" r="20" fill="rgba(255,209,102,0.15)"/>
+              <circle cx="430" cy="290" r="13" fill="rgba(255,209,102,0.25)"/>
+              <circle cx="430" cy="290" r="6" fill="var(--yellow)"/>
+              <text x="430" y="295" text-anchor="middle" fill="white" font-size="8" font-weight="700">KOL</text>
+              <text x="430" y="318" text-anchor="middle" fill="var(--yellow)" font-size="10" font-weight="600">MEDIUM</text>
+              <text x="430" y="331" text-anchor="middle" fill="var(--text-dim)" font-size="9">452 posts</text>
+            </g>
+            <!-- Watch: Chennai -->
+            <g class="map-hotspot" onclick="mapClick('chennai')" style="cursor:pointer" id="hs-chennai">
+              <circle cx="310" cy="490" r="13" fill="rgba(6,214,160,0.15)"/>
+              <circle cx="310" cy="490" r="7" fill="rgba(6,214,160,0.3)"/>
+              <circle cx="310" cy="490" r="4" fill="var(--green)"/>
+              <text x="310" y="512" text-anchor="middle" fill="var(--green)" font-size="9" font-weight="600">WATCH</text>
+              <text x="310" y="523" text-anchor="middle" fill="var(--text-dim)" font-size="8">184 posts</text>
+            </g>
+            <!-- Bangalore watch -->
+            <g onclick="mapClick('bangalore')" style="cursor:pointer">
+              <circle cx="285" cy="455" r="10" fill="rgba(6,214,160,0.1)"/>
+              <circle cx="285" cy="455" r="5" fill="rgba(6,214,160,0.2)"/>
+              <circle cx="285" cy="455" r="3" fill="var(--green)"/>
+              <text x="285" y="472" text-anchor="middle" fill="var(--text-faint)" font-size="8">BLR</text>
+            </g>
+            <!-- Pulse animations -->
+            <style>
+              @keyframes mapPulse { 0%{r:32;opacity:0.8} 100%{r:55;opacity:0} }
+              @keyframes mapPulse2 { 0%{r:26;opacity:0.8} 100%{r:45;opacity:0} }
+              .pulse-ring { animation: mapPulse 2s ease-out infinite; }
+              .pulse-ring2 { animation: mapPulse2 2.2s ease-out infinite; }
+              .map-hotspot:hover circle:first-child { opacity: 1.2; }
+            </style>
+          </svg>
+          <!-- Legend -->
+          <div style="position:absolute;bottom:16px;left:16px;background:rgba(4,13,26,0.9);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:11px">
+            <div style="font-weight:700;margin-bottom:8px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px">Risk Level</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:var(--red)"></div> Critical</div>
+              <div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:var(--orange)"></div> High</div>
+              <div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:var(--yellow)"></div> Medium</div>
+              <div style="display:flex;align-items:center;gap:8px"><div style="width:10px;height:10px;border-radius:50%;background:var(--green)"></div> Watch</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Right panel -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="section">
+          <div class="section-title" style="margin-bottom:14px"><span class="icon">📍</span> Location Details</div>
+          <div id="mapDetail" style="font-size:13px;color:var(--text-dim);line-height:1.7">
+            Click any hotspot on the map to see detailed crisis information for that location.
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title" style="margin-bottom:14px"><span class="icon">📊</span> National Summary</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:13px;color:var(--text-dim)">Total Cities Monitored</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700">28</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:13px;color:var(--text-dim)">Active Crises</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--red)">3</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:13px;color:var(--text-dim)">On Watch</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green)">2</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0">
+              <span style="font-size:13px;color:var(--text-dim)">Total Posts</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--blue-light)">2,847</span>
+            </div>
+          </div>
+        </div>
+        <button class="btn-primary" style="justify-content:center" onclick="exportPDF()">📄 Export Crisis Report PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== KEYWORD ALERTS PAGE ===== -->
+  <div class="page" id="page-alerts">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px">
+      <!-- Add keyword -->
+      <div class="section">
+        <div class="section-title" style="margin-bottom:16px"><span class="icon">🔔</span> Add Keyword Alert</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <label style="font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);display:block;margin-bottom:6px">Keyword or Phrase</label>
+            <input id="kwInput" style="width:100%;background:var(--navy-700);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13.5px;outline:none" placeholder="e.g. flood, earthquake, outbreak..." onkeydown="if(event.key==='Enter')addKeyword()"/>
+          </div>
+          <div>
+            <label style="font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);display:block;margin-bottom:6px">Threshold (posts/hr)</label>
+            <input id="kwThresh" type="number" value="50" style="width:100%;background:var(--navy-700);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13.5px;outline:none"/>
+          </div>
+          <div>
+            <label style="font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);display:block;margin-bottom:6px">Platform</label>
+            <select id="kwPlatform" style="width:100%;background:var(--navy-700);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13.5px;outline:none">
+              <option value="all">All Platforms</option>
+              <option value="reddit">Reddit</option>
+              <option value="twitter">Twitter / X</option>
+              <option value="youtube">YouTube</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="addKeyword()" style="justify-content:center">+ Add Alert</button>
+        </div>
+      </div>
+      <!-- AI Suggest keywords -->
+      <div class="section">
+        <div class="section-title" style="margin-bottom:16px"><span class="icon">🤖</span> AI Keyword Suggestions</div>
+        <p style="font-size:13px;color:var(--text-dim);margin-bottom:14px;line-height:1.6">Based on current crisis patterns, Claude AI recommends monitoring these keywords:</p>
+        <div id="aiKeywords" style="display:flex;flex-direction:column;gap:8px">
+          <div class="rec-item" style="cursor:pointer" onclick="quickAdd('flood warning mumbai')"><div class="rec-num">+</div><div><strong>flood warning mumbai</strong> — High spike probability</div></div>
+          <div class="rec-item" style="cursor:pointer" onclick="quickAdd('power cut delhi')"><div class="rec-num">+</div><div><strong>power cut delhi</strong> — Trending on Twitter</div></div>
+          <div class="rec-item" style="cursor:pointer" onclick="quickAdd('disease outbreak')"><div class="rec-num">+</div><div><strong>disease outbreak</strong> — Health misinformation risk</div></div>
+          <div class="rec-item" style="cursor:pointer" onclick="quickAdd('fake news india')"><div class="rec-num">+</div><div><strong>fake news india</strong> — General misinformation</div></div>
+        </div>
+        <button class="btn-outline" style="margin-top:14px;width:100%" onclick="refreshAISuggestions()">🔄 Refresh AI Suggestions</button>
+      </div>
+    </div>
+    <!-- Active keyword list -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title"><span class="icon">📋</span> Active Keyword Alerts (<span id="kwCount">4</span>)</div>
+        <button class="btn-outline" style="padding:6px 14px;font-size:12px" onclick="clearAllKeywords()">Clear All</button>
+      </div>
+      <table class="data-table" id="kwTable">
+        <thead>
+          <tr><th>Keyword</th><th>Platform</th><th>Threshold</th><th>Current Rate</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody id="kwBody">
+          <tr>
+            <td style="font-weight:600">🌊 flood</td>
+            <td>All Platforms</td>
+            <td>50/hr</td>
+            <td style="color:var(--red);font-family:'JetBrains Mono',monospace;font-weight:700">340/hr ⚡</td>
+            <td><span class="badge badge-critical">TRIGGERED</span></td>
+            <td><button class="respond-btn" onclick="removeKeyword(this)">Remove</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">⚡ power outage</td>
+            <td>Twitter</td>
+            <td>30/hr</td>
+            <td style="color:var(--orange);font-family:'JetBrains Mono',monospace;font-weight:700">210/hr ↑</td>
+            <td><span class="badge badge-high">TRIGGERED</span></td>
+            <td><button class="respond-btn" onclick="removeKeyword(this)">Remove</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">🦠 health rumor</td>
+            <td>YouTube</td>
+            <td>20/hr</td>
+            <td style="color:var(--yellow);font-family:'JetBrains Mono',monospace;font-weight:700">90/hr ↑</td>
+            <td><span class="badge badge-medium">TRIGGERED</span></td>
+            <td><button class="respond-btn" onclick="removeKeyword(this)">Remove</button></td>
+          </tr>
+          <tr>
+            <td style="font-weight:600">📰 fake news</td>
+            <td>All Platforms</td>
+            <td>100/hr</td>
+            <td style="color:var(--green);font-family:'JetBrains Mono',monospace;font-weight:700">45/hr</td>
+            <td><span class="badge badge-low">MONITORING</span></td>
+            <td><button class="respond-btn" onclick="removeKeyword(this)">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== REDDIT LIVE FEED PAGE ===== -->
+  <div class="page" id="page-reddit">
+    <div style="display:flex;gap:12px;margin-bottom:18px;align-items:center;flex-wrap:wrap">
+      <input id="redditSearch" style="flex:1;min-width:200px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 16px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13.5px;outline:none" placeholder="Search subreddit or topic (e.g. india, mumbai, flood)..." value="india"/>
+      <button class="btn-primary" onclick="fetchReddit()" id="redditFetchBtn" style="white-space:nowrap"><span id="redditBtnText">🟠 Fetch Live Posts</span></button>
+      <button class="btn-outline" onclick="analyzeRedditWithAI()" style="white-space:nowrap">🤖 Analyze with AI</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:18px">
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title"><span class="icon">🟠</span> Live Reddit Posts</div>
+          <span id="redditStatus" style="font-size:11px;color:var(--text-faint);font-family:'JetBrains Mono',monospace">Ready to fetch</span>
+        </div>
+        <div id="redditFeed" style="display:flex;flex-direction:column;gap:12px;max-height:520px;overflow-y:auto;padding-right:4px">
+          <div style="text-align:center;padding:60px 20px;color:var(--text-dim)">
+            <div style="font-size:40px;margin-bottom:12px">🟠</div>
+            <div style="font-size:15px;font-weight:600;margin-bottom:6px">Fetch Live Reddit Data</div>
+            <div style="font-size:13px">Click "Fetch Live Posts" to pull real public posts from Reddit's API</div>
+          </div>
+        </div>
+      </div>
+      <!-- Sentiment sidebar -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="section">
+          <div class="section-title" style="margin-bottom:14px"><span class="icon">💬</span> Live Sentiment</div>
+          <div id="redditSentiment" style="color:var(--text-dim);font-size:13px">Fetch posts to see sentiment analysis.</div>
+        </div>
+        <div class="section">
+          <div class="section-title" style="margin-bottom:14px"><span class="icon">🤖</span> AI Analysis</div>
+          <div id="redditAIAnalysis" style="font-size:13px;color:var(--text-dim);line-height:1.7">AI analysis will appear here after fetching posts.</div>
+        </div>
+        <button class="btn-primary" style="justify-content:center" onclick="exportPDF()">📄 Export as PDF Report</button>
+      </div>
+    </div>
+  </div>
+
+<!-- ===== MODALS ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-title-area">
+        <div class="modal-icon" id="mIcon" style="background:var(--orange-dim)">🎯</div>
+        <div>
+          <div class="modal-title" id="mTitle">Predictive Risk Score</div>
+          <div class="modal-subtitle" id="mSub">Detailed analysis</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toastT">Done</div>
+  <div class="toast-msg" id="toastM"></div>
+</div>
+
+<script>
+// ─── CLOCK ───
+function tick() {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-IN',{hour12:true});
+}
+tick(); setInterval(tick, 1000);
+
+// ─── NAVIGATION ───
+function navigate(page, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('pageTitle').textContent = {
+    dashboard:'Dashboard', insights:'AI Insights',
+    response:'Response Center', analytics:'Analytics',
+    map:'🗺️ Crisis Map', alerts:'🔔 Keyword Alerts', reddit:'🟠 Reddit Live Feed'
+  }[page] || page;
+}
+
+// ─── LIVE COUNT ───
+setInterval(() => {
+  const el = document.getElementById('liveCount');
+  const n = parseInt(el.textContent.replace(/,/g,'')) + Math.floor(Math.random()*6+1);
+  el.textContent = n.toLocaleString('en-IN');
+}, 4500);
+
+// ─── RESPONSE TABS ───
+function switchRTab(el, id) {
+  document.querySelectorAll('.rtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['rsummary','rdraft','ractions'].forEach(t => {
+    document.getElementById(t).style.display = t === id ? 'block' : 'none';
+  });
+}
+
+// ─── CRISIS DATA ───
+const crisisData = {
+  mumbai: {
+    title: '🌊 Mumbai Flood Misinformation', meta: '📍 Mumbai · ⏱ 2h ago · 📊 1,204 posts · 🔴 340/hr',
+    summary: 'A significant spike in misinformation about a flood disaster was detected in Mumbai starting at approximately 16:30 IST. Posts claim dangerous water levels in Kurla, Dharavi, and Andheri. Sentiment shows 78% negative with panic indicators. Cross-platform verification indicates the claims are exaggerated — while rainfall is above normal, severity is being amplified. Immediate official communication is strongly recommended.',
+    draft: '🔔 OFFICIAL ADVISORY — Municipal Corporation of Mumbai\n\nWe are aware of social media posts circulating about severe flooding in Kurla, Dharavi, and Andheri areas. Following assessment by our disaster management teams:\n\n✅ Water levels are ELEVATED but NOT at crisis levels reported online\n✅ Emergency teams deployed and monitoring all vulnerable areas\n✅ Zone A residents: follow standard monsoon safety precautions\n✅ NDRF teams on standby as precautionary measure\n\nPlease rely ONLY on official channels. Do NOT spread unverified information.\n\n📞 Helpline: 1916 | Emergency: 112\n— Mumbai Disaster Management Authority'
+  },
+  delhi: {
+    title: '⚡ Delhi Power Outage Panic', meta: '📍 Delhi · ⏱ 3h ago · 📊 891 posts · 🟠 210/hr',
+    summary: 'Growing panic around an unconfirmed city-wide power outage in Delhi detected across Twitter and Reddit. Posts suggest outages in South Delhi, Dwarka, and Rohini. Sentiment is 65% negative with high urgency signals. DISCOM has confirmed only scheduled maintenance in Rohini — other areas are unaffected. Misinformation is being amplified by large-following accounts.',
+    draft: '🔔 OFFICIAL ADVISORY — Delhi Electricity Regulatory Commission\n\nScheduled maintenance in Rohini Sector 11–18 from 14:00–17:00 IST today. Other areas of Delhi are NOT affected.\n\n✅ Power supply is NORMAL across South Delhi and Dwarka\n✅ Rohini restoration expected by 17:30 IST\n✅ Our engineers are monitoring all zones\n\nReport genuine outages: 19123 | Helpline: 011-23900000\n— DERC Official'
+  },
+  kolkata: {
+    title: '🦠 Kolkata Health Rumor', meta: '📍 Kolkata · ⏱ 4h ago · 📊 452 posts · 🟡 90/hr',
+    summary: 'A health-related misinformation cluster has emerged in Kolkata on YouTube and Reddit, claiming a new disease outbreak in North Kolkata. 60% negative sentiment with fear and anxiety keywords dominant. State Health Department reports no such outbreak — posts originate from 2–3 seed accounts. Risk of escalation to national media if not addressed promptly.',
+    draft: '🔔 PUBLIC HEALTH ADVISORY — West Bengal Health Department\n\nWe are aware of social media posts claiming a disease outbreak in North Kolkata.\n\n✅ NO outbreak has been confirmed\n✅ All hospitals are operating normally\n✅ Routine health surveillance is ongoing\n\nDo NOT share unverified medical information. Consult registered medical professionals only.\n\n📞 Health Helpline: 104 | Emergency: 112\n— WB Department of Health & Family Welfare'
+  }
+};
+
+function selectCrisis(el, id) {
+  document.querySelectorAll('.crisis-item').forEach(i => i.classList.remove('sel'));
+  el.classList.add('sel');
+  const d = crisisData[id];
+  document.getElementById('rTitle').textContent = d.title;
+  document.querySelector('.resp-meta').innerHTML = d.meta.split('·').map(m=>`<span class="resp-meta-item">${m.trim()}</span>`).join('');
+  document.getElementById('summaryBox').textContent = d.summary;
+  document.getElementById('draftBox').value = d.draft;
+  switchRTab(document.querySelector('.rtab.active'), 'rsummary');
+  document.querySelectorAll('.rtab').forEach((t,i)=>{ if(i===0) t.classList.add('active'); else t.classList.remove('active'); });
+  document.getElementById('rsummary').style.display='block';
+  document.getElementById('rdraft').style.display='none';
+  document.getElementById('ractions').style.display='none';
+  toast('Crisis Loaded', d.title + ' selected');
+}
+
+function goRespond(id) {
+  navigate('response', document.querySelectorAll('.nav-item')[2]);
+  const items = document.querySelectorAll('.crisis-item');
+  const map = {mumbai:0, delhi:1, kolkata:2};
+  selectCrisis(items[map[id]], id);
+}
+
+// ─── SCAN NOW ───
+async function runScan(btn) {
+  const txt = document.getElementById('scanBtnText');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  txt.innerHTML = '<span class="spin"></span> Scanning...';
+  
+  // Animate scan progress in topbar
+  toast('🔍 Scanning', 'Fetching latest posts from Reddit, YouTube, Twitter...');
+  
+  await new Promise(r => setTimeout(r, 800));
+  toast('🧠 Analyzing', 'Running BERT sentiment analysis on 2,847 posts...');
+  await new Promise(r => setTimeout(r, 1000));
+  toast('📊 Processing', 'Time-series anomaly detection running...');
+  await new Promise(r => setTimeout(r, 1000));
+
+  // Update live count with a jump
+  const el = document.getElementById('liveCount');
+  const n = parseInt(el.textContent.replace(/,/g,'')) + Math.floor(Math.random()*120+80);
+  el.textContent = n.toLocaleString('en-IN');
+  
+  toast('✅ Scan Complete', `${n.toLocaleString()} posts analyzed. 3 crises active.`);
+  txt.innerHTML = '✅ Scanned';
+  setTimeout(() => { txt.innerHTML = '🔍 Scan Now'; btn.disabled = false; }, 3000);
+}
+
+// ─── PUBLISH DRAFT ───
+function publishDraft() {
+  const crisis = document.getElementById('rTitle').textContent;
+  openModal('publish');
+}
+
+// ─── APPROVE ACTION PLAN ───
+async function approveActionPlan() {
+  const btn = event.currentTarget;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Executing...';
+  await new Promise(r => setTimeout(r, 1500));
+  btn.innerHTML = '✅ Plan Executed!';
+  btn.style.background = 'linear-gradient(135deg, var(--green), #059669)';
+  toast('✅ Action Plan Approved', 'All 4 tasks dispatched to field teams');
+  setTimeout(() => {
+    btn.innerHTML = '✅ Approve & Execute Plan';
+    btn.disabled = false;
+    btn.style.background = '';
+  }, 4000);
+}
+
+// ─── SHARE WITH TEAM ───
+function shareWithTeam() {
+  openModal('share');
+}
+
+// ─── ANALYTICS FILTER ───
+const chartData = {
+  week: {
+    bars: [{h:'40%',c:'var(--blue-accent)',l:'Mon'},{h:'65%',c:'var(--blue-accent)',l:'Tue'},{h:'30%',c:'var(--blue-accent)',l:'Wed'},{h:'80%',c:'var(--orange)',l:'Thu'},{h:'55%',c:'var(--blue-accent)',l:'Fri'},{h:'90%',c:'var(--red)',l:'Sat'},{h:'100%',c:'var(--red)',l:'Sun'}]
+  },
+  month: {
+    bars: [{h:'45%',c:'var(--blue-accent)',l:'W1'},{h:'60%',c:'var(--orange)',l:'W2'},{h:'75%',c:'var(--red)',l:'W3'},{h:'55%',c:'var(--blue-accent)',l:'W4'}]
+  },
+  custom: {
+    bars: [{h:'88%',c:'var(--red)',l:'Mar'},{h:'62%',c:'var(--orange)',l:'Apr'},{h:'41%',c:'var(--blue-accent)',l:'May'},{h:'77%',c:'var(--red)',l:'Jun'},{h:'50%',c:'var(--blue-accent)',l:'Jul'},{h:'68%',c:'var(--orange)',l:'Aug'}]
+  }
+};
+
+function filterChart(btn, type) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const data = chartData[type].bars;
+  const chart = document.getElementById('barChart');
+  chart.innerHTML = data.map(d => `
+    <div class="bar-col">
+      <div class="bar-fill" style="height:${d.h};background:${d.c}"></div>
+      <div class="bar-lbl">${d.l}</div>
+    </div>`).join('');
+  toast('Chart Updated', `Showing ${type} view`);
+}
+
+// ─── AI GENERATE ───
+async function aiGenSummary() {
+  const btn = event.currentTarget;
+  const sp = document.getElementById('sumSpinner');
+  sp.innerHTML = '<span class="spin"></span> ';
+  btn.disabled = true;
+  const crisis = document.getElementById('rTitle').textContent;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        messages:[{role:'user', content:`You are a crisis intelligence AI for SocialPulse AI, monitoring social media in India. Write a concise crisis situation brief (3–4 sentences, no markdown, professional tone) for: "${crisis}". Include: what is happening, where, sentiment level, and urgency. Be factual and authoritative.`}]
+      })
+    });
+    const data = await res.json();
+    document.getElementById('summaryBox').textContent = data.content[0].text;
+    toast('AI Updated', 'Summary regenerated successfully');
+  } catch(e) { toast('Error', 'AI temporarily unavailable'); }
+  sp.innerHTML = '';
+  btn.disabled = false;
+}
+
+async function aiGenDraft() {
+  const btn = event.currentTarget;
+  const sp = document.getElementById('draftSpinner');
+  sp.innerHTML = '<span class="spin"></span> ';
+  btn.disabled = true;
+  const crisis = document.getElementById('rTitle').textContent;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        messages:[{role:'user', content:`You are a crisis communications expert for Indian government agencies. Write an official public advisory for: "${crisis}". Structure: opening statement, 3-4 bullet points with ✅ for what's true and what people should do, helpline numbers. Keep it concise, reassuring and authoritative. No markdown headers.`}]
+      })
+    });
+    const data = await res.json();
+    document.getElementById('draftBox').value = data.content[0].text;
+    toast('AI Draft Ready', 'Advisory generated by Claude AI');
+  } catch(e) { toast('Error', 'AI temporarily unavailable'); }
+  sp.innerHTML = '';
+  btn.disabled = false;
+}
+
+function copyText(id) {
+  const el = document.getElementById(id);
+  const txt = el.tagName === 'TEXTAREA' ? el.value : el.textContent;
+  navigator.clipboard.writeText(txt).then(() => toast('Copied!', 'Text copied to clipboard'));
+}
+
+// ─── AI CHAT (Real Claude API) ───
+const chatHistory = [];
+
+async function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const msg = inp.value.trim();
+  if(!msg) return;
+  inp.value = '';
+  const msgs = document.getElementById('chatMessages');
+  const now = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+
+  msgs.innerHTML += `<div class="msg user"><div class="msg-bubble">${msg}</div><div class="msg-time">${now}</div></div>`;
+  chatHistory.push({role:'user', content: msg});
+
+  const typing = document.createElement('div');
+  typing.className = 'msg ai';
+  typing.innerHTML = '<div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  msgs.appendChild(typing);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const systemPrompt = `You are an AI Crisis Analyst for SocialPulse AI, a real-time social media crisis monitoring platform for India. Live data: 2,847 posts monitored across Reddit, YouTube, Twitter. Active crises: (1) Mumbai flood misinformation - CRITICAL, 1,204 posts, 78% negative sentiment; (2) Delhi power outage panic - HIGH, 891 posts, 65% negative; (3) Kolkata health rumor - MEDIUM, 452 posts. Overall risk score: 87%. Models used: BERT/RoBERTa for sentiment, GPT for classification, time-series anomaly detection. Answer in 2-4 sentences. Be specific, professional, and data-driven.`;
+
+  try {
+    const messages = [{role:'user', content: systemPrompt + '\n\nUser question: ' + msg}];
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:500,
+        messages: messages
+      })
+    });
+    const data = await res.json();
+    const reply = data.content[0].text;
+    chatHistory.push({role:'assistant', content: reply});
+    typing.innerHTML = `<div class="msg-bubble">${reply}</div><div class="msg-time">${now}</div>`;
+  } catch(e) {
+    typing.innerHTML = `<div class="msg-bubble" style="color:var(--text-dim)">Unable to connect right now. Please try again shortly.</div><div class="msg-time">${now}</div>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ─── MODALS ───
+const modalContent = {
+  alerts: {
+    icon:'🚨', iconBg:'var(--red-dim)', title:'Active Alerts (3)', sub:'Live monitoring across all platforms',
+    body: () => `
+      <div class="alert-modal-item" onclick="closeModal();goRespond('mumbai')">
+        <div style="font-size:22px">🌊</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px">Mumbai Flood Misinformation <span class="badge badge-critical" style="margin-left:8px">CRITICAL</span></div>
+          <div style="font-size:12px;color:var(--text-dim)">1,204 posts · Spike 340% in 30min · Reddit + Twitter</div>
+        </div>
+        <div style="color:var(--blue-light);font-size:12px;font-weight:600">Respond →</div>
+      </div>
+      <div class="alert-modal-item" onclick="closeModal();goRespond('delhi')">
+        <div style="font-size:22px">⚡</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px">Delhi Power Outage Panic <span class="badge badge-high" style="margin-left:8px">HIGH</span></div>
+          <div style="font-size:12px;color:var(--text-dim)">891 posts · Trending nationwide · Twitter</div>
+        </div>
+        <div style="color:var(--blue-light);font-size:12px;font-weight:600">Respond →</div>
+      </div>
+      <div class="alert-modal-item" onclick="closeModal();goRespond('kolkata')">
+        <div style="font-size:22px">🦠</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px">Kolkata Health Rumor <span class="badge badge-medium" style="margin-left:8px">MEDIUM</span></div>
+          <div style="font-size:12px;color:var(--text-dim)">452 posts · 3 seed accounts · YouTube</div>
+        </div>
+        <div style="color:var(--blue-light);font-size:12px;font-weight:600">Respond →</div>
+      </div>
+      <div style="margin-top:16px;padding:14px;background:var(--blue-glow);border-radius:12px;border:1px solid rgba(26,110,245,0.2);font-size:13px;color:var(--blue-light)">
+        💡 Click any alert above to open it in the Response Center
+      </div>`
+  },
+  'plat-reddit': {
+    icon:'🟠', iconBg:'rgba(255,140,66,0.15)', title:'Reddit — Live Stats', sub:'Spike detected · Updated 2 min ago',
+    body: () => `
+      <div class="plat-detail-grid">
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Total Posts</div><div class="plat-detail-num" style="color:var(--orange)">1,204</div></div>
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Posts/hr</div><div class="plat-detail-num" style="color:var(--red)">340</div></div>
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Neg Sentiment</div><div class="plat-detail-num" style="color:var(--red)">62%</div></div>
+      </div>
+      <div class="modal-chart-label">Hourly Activity (Last 6 Hours)</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:120px;padding:10px 0;margin-bottom:20px">
+        ${[18,35,42,78,95,100].map((h,i)=>`
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:100%;height:${h}%;background:${h>70?'var(--red)':'var(--orange)'};border-radius:6px 6px 0 0;transition:height 0.8s"></div>
+            <div style="font-size:10px;color:var(--text-faint);font-family:'JetBrains Mono',monospace">${i+1}h ago</div>
+          </div>`).join('')}
+      </div>
+      <div class="modal-insight-box">
+        <div class="modal-insight-title">🔥 Top Trending Topics</div>
+        <div class="modal-insight-item">🌊 #MumbaiFloods — 687 mentions, 93% negative</div>
+        <div class="modal-insight-item">⚡ #DelhiBlackout — 312 mentions, trending</div>
+        <div class="modal-insight-item">🦠 r/Kolkata health thread — 205 upvotes, misinformation flagged</div>
+      </div>`
+  },
+  'plat-youtube': {
+    icon:'🔴', iconBg:'rgba(255,59,92,0.15)', title:'YouTube — Live Stats', sub:'Steady flow · Comment monitoring active',
+    body: () => `
+      <div class="plat-detail-grid">
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Comments</div><div class="plat-detail-num" style="color:var(--blue-light)">891</div></div>
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Videos Flagged</div><div class="plat-detail-num" style="color:var(--orange)">7</div></div>
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Neg Sentiment</div><div class="plat-detail-num" style="color:var(--yellow)">42%</div></div>
+      </div>
+      <div class="modal-chart-label">Hourly Comment Volume</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;height:120px;padding:10px 0;margin-bottom:20px">
+        ${[55,60,70,65,80,75].map((h,i)=>`
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:100%;height:${h}%;background:var(--blue-accent);border-radius:6px 6px 0 0"></div>
+            <div style="font-size:10px;color:var(--text-faint);font-family:'JetBrains Mono',monospace">${i+1}h ago</div>
+          </div>`).join('')}
+      </div>
+      <div class="modal-insight-box">
+        <div class="modal-insight-title">📹 Top Flagged Videos</div>
+        <div class="modal-insight-item">🎥 "Mumbai underwater" — 450K views, misinformation label pending</div>
+        <div class="modal-insight-item">🎥 "Kolkata mystery illness" — 120K views, 3 seed channel origin</div>
+        <div class="modal-insight-item">🎥 "Delhi blackout conspiracy" — 80K views, spreading rapidly</div>
+      </div>`
+  },
+  'plat-twitter': {
+    icon:'🐦', iconBg:'rgba(29,161,242,0.15)', title:'Twitter / X — Live Stats', sub:'Trending now · High velocity',
+    body: () => `
+      <div class="plat-detail-grid">
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Total Posts</div><div class="plat-detail-num" style="color:var(--red)">752</div></div>
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Retweets</div><div class="plat-detail-num" style="color:var(--orange)">4.2K</div></div>
+        <div class="plat-detail-stat"><div class="plat-detail-lbl">Neg Sentiment</div><div class="plat-detail-num" style="color:var(--red)">58%</div></div>
+      </div>
+      <div class="modal-chart-label">Trending Hashtags</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        ${[{tag:'#MumbaiFloods',count:'12.4K',c:'var(--red)'},{tag:'#DelhiBlackout',count:'8.1K',c:'var(--orange)'},{tag:'#KolkataHealth',count:'3.2K',c:'var(--yellow)'},{tag:'#IndiaAlert',count:'2.8K',c:'var(--blue-light)'}].map(t=>`
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--navy-700);border-radius:10px;border:1px solid var(--border)">
+            <span style="color:${t.c};font-weight:700;font-size:14px">${t.tag}</span>
+            <div style="flex:1;height:6px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden"><div style="height:100%;width:${Math.round(parseInt(t.count)/124)}%;background:${t.c};border-radius:99px"></div></div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim)">${t.count}</span>
+          </div>`).join('')}
+      </div>
+      <div class="modal-insight-box">
+        <div class="modal-insight-title">⚡ Key Accounts Spreading Info</div>
+        <div class="modal-insight-item">📢 3 verified accounts retweeting Mumbai flood posts — mixed accuracy</div>
+        <div class="modal-insight-item">🤖 Bot cluster detected amplifying Delhi hashtag — 47 bot accounts flagged</div>
+      </div>`
+  },
+  publish: {
+    icon:'📤', iconBg:'var(--blue-glow)', title:'Publish Advisory', sub:'Review before sending to official channels',
+    body: () => `
+      <div style="margin-bottom:20px">
+        <div class="modal-chart-label">Publishing To</div>
+        <div class="publish-steps">
+          <div class="pub-step"><span class="pub-step-icon">🐦</span> Twitter / X Official Handle <div class="pub-step-check">✓</div></div>
+          <div class="pub-step"><span class="pub-step-icon">📘</span> Facebook Official Page <div class="pub-step-check">✓</div></div>
+          <div class="pub-step"><span class="pub-step-icon">📸</span> Instagram Story <div class="pub-step-check">✓</div></div>
+          <div class="pub-step"><span class="pub-step-icon">📡</span> Government Crisis Portal <div class="pub-step-check">✓</div></div>
+        </div>
+      </div>
+      <div style="background:var(--red-dim);border:1px solid rgba(255,59,92,0.2);border-radius:12px;padding:14px;font-size:13px;color:var(--text-dim);margin-bottom:20px">
+        ⚠️ <strong style="color:var(--red)">Warning:</strong> This will publish to 4 official channels simultaneously. Make sure the advisory has been reviewed by a supervisor.
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn-primary" style="flex:1" onclick="confirmPublish()">✅ Confirm & Publish Now</button>
+        <button class="btn-outline" onclick="closeModal()">Cancel</button>
+      </div>`
+  },
+  share: {
+    icon:'📨', iconBg:'var(--green-dim)', title:'Share with Team', sub:'Notify team members about this action plan',
+    body: () => `
+      <div style="margin-bottom:16px">
+        <div class="modal-chart-label">Select Team Members</div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="teamList">
+          ${[
+            {name:'Priya Sharma',role:'Crisis Coordinator',avatar:'👩‍💼'},
+            {name:'Ravi Kumar',role:'Field Response Lead',avatar:'👨‍🚒'},
+            {name:'Anita Singh',role:'Communications Officer',avatar:'👩‍💻'},
+            {name:'Suresh Nair',role:'Data Analyst',avatar:'👨‍💻'}
+          ].map((m,i)=>`
+            <label style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--navy-700);border:1px solid var(--border);border-radius:10px;cursor:pointer">
+              <input type="checkbox" ${i<2?'checked':''} style="width:16px;height:16px;accent-color:var(--blue-accent)">
+              <span style="font-size:22px">${m.avatar}</span>
+              <div><div style="font-size:13px;font-weight:600">${m.name}</div><div style="font-size:11px;color:var(--text-dim)">${m.role}</div></div>
+            </label>`).join('')}
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div class="modal-chart-label">Message (Optional)</div>
+        <textarea style="width:100%;background:var(--navy-700);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;resize:vertical;min-height:80px;outline:none" placeholder="Add a note for your team..."></textarea>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn-primary" style="flex:1" onclick="confirmShare()">📨 Send Notification</button>
+        <button class="btn-outline" onclick="closeModal()">Cancel</button>
+      </div>`
+  },
+  risk: {
+    icon:'🎯', iconBg:'var(--orange-dim)', title:'Predictive Risk Score', sub:'ML-based time-series forecast · Updated every 30s',
+    body: () => `
+      <div class="modal-stat-row">
+        <div class="modal-stat"><div class="modal-stat-lbl">Risk Score</div><div class="modal-stat-val" style="color:var(--orange)">87%</div></div>
+        <div class="modal-stat"><div class="modal-stat-lbl">Forecast Window</div><div class="modal-stat-val" style="color:var(--blue-light)">6 hrs</div></div>
+        <div class="modal-stat"><div class="modal-stat-lbl">Confidence</div><div class="modal-stat-val" style="color:var(--green)">94%</div></div>
+      </div>
+      <div class="modal-chart-label">Risk Probability Gauge</div>
+      <div class="gauge-wrap">
+        <div class="gauge-num" style="color:var(--orange)">87<span style="font-size:32px;color:var(--text-dim)">%</span></div>
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:12px">High probability of incident escalation in next 6 hours</div>
+        <div class="gauge-track" style="width:100%"><div class="gauge-fill" style="width:87%"></div></div>
+        <div class="gauge-labels"><span>0%</span><span>LOW</span><span>MEDIUM</span><span>HIGH</span><span>100%</span></div>
+      </div>
+      <div class="modal-insight-box">
+        <div class="modal-insight-title">🤖 Model Findings</div>
+        <div class="modal-insight-item">📈 Post volume increased 340% in last 30 minutes — anomaly detected by time-series model</div>
+        <div class="modal-insight-item">😡 Negative sentiment spiked from 32% to 55% over 2 hours — BERT classifier triggered</div>
+        <div class="modal-insight-item">🌍 Crisis cluster geographically concentrated in Mumbai — likely single event origin</div>
+        <div class="modal-insight-item">⚠️ 3 additional crisis events predicted to emerge within 6 hours based on current trajectory</div>
+      </div>`
+  },
+  sentiment: {
+    icon:'💬', iconBg:'var(--blue-glow)', title:'Sentiment Analysis', sub:'BERT/RoBERTa transformer model · 2,847 posts analyzed',
+    body: () => `
+      <div class="modal-stat-row">
+        <div class="modal-stat"><div class="modal-stat-lbl">Posts Analyzed</div><div class="modal-stat-val" style="color:var(--blue-light)">2,847</div></div>
+        <div class="modal-stat"><div class="modal-stat-lbl">Dominant</div><div class="modal-stat-val" style="color:var(--red)">Negative</div></div>
+        <div class="modal-stat"><div class="modal-stat-lbl">Model F1</div><div class="modal-stat-val" style="color:var(--green)">0.972</div></div>
+      </div>
+      <div class="modal-chart-label">Sentiment Distribution</div>
+      <div class="sent-modal">
+        <div class="sent-modal-row">
+          <span class="sent-modal-label" style="color:var(--red)">😡 Negative</span>
+          <div class="sent-modal-track"><div class="sent-modal-fill" style="width:55%;background:var(--red)"></div></div>
+          <span class="sent-modal-pct" style="color:var(--red)">55%</span>
+        </div>
+        <div class="sent-modal-row">
+          <span class="sent-modal-label" style="color:var(--text-dim)">😐 Neutral</span>
+          <div class="sent-modal-track"><div class="sent-modal-fill" style="width:25%;background:var(--text-dim)"></div></div>
+          <span class="sent-modal-pct">25%</span>
+        </div>
+        <div class="sent-modal-row">
+          <span class="sent-modal-label" style="color:var(--green)">😊 Positive</span>
+          <div class="sent-modal-track"><div class="sent-modal-fill" style="width:20%;background:var(--green)"></div></div>
+          <span class="sent-modal-pct" style="color:var(--green)">20%</span>
+        </div>
+      </div>
+      <div class="modal-insight-box" style="margin-top:20px">
+        <div class="modal-insight-title">📊 Platform Breakdown</div>
+        <div class="modal-insight-item">🟠 Reddit: 62% negative · Highest fear/panic keywords · 1,204 posts</div>
+        <div class="modal-insight-item">🐦 Twitter/X: 58% negative · Trending hashtags driving amplification · 752 posts</div>
+        <div class="modal-insight-item">🔴 YouTube: 42% negative · Comments mostly informational · 891 posts</div>
+      </div>`
+  },
+  locations: {
+    icon:'🌍', iconBg:'var(--red-dim)', title:'High-Risk Locations', sub:'Geo-clustering · NLP location extraction · 4 cities flagged',
+    body: () => `
+      <div class="modal-stat-row">
+        <div class="modal-stat"><div class="modal-stat-lbl">Cities Flagged</div><div class="modal-stat-val" style="color:var(--red)">4</div></div>
+        <div class="modal-stat"><div class="modal-stat-lbl">Critical Zones</div><div class="modal-stat-val" style="color:var(--orange)">1</div></div>
+        <div class="modal-stat"><div class="modal-stat-lbl">Coverage</div><div class="modal-stat-val" style="color:var(--blue-light)">5 States</div></div>
+      </div>
+      <div class="modal-chart-label">Location Risk Matrix</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        ${[
+          {city:'Mumbai',state:'Maharashtra',risk:'CRITICAL',score:92,color:'var(--red)',posts:'1,204',type:'Flood Misinformation'},
+          {city:'Delhi',state:'NCT',risk:'HIGH',score:71,color:'var(--orange)',posts:'891',type:'Power Outage Panic'},
+          {city:'Kolkata',state:'West Bengal',risk:'MEDIUM',score:48,color:'var(--yellow)',posts:'452',type:'Health Rumor'},
+          {city:'Chennai',state:'Tamil Nadu',risk:'WATCH',score:22,color:'var(--green)',posts:'184',type:'Monitoring'}
+        ].map(l=>`
+          <div style="background:var(--navy-700);border:1px solid var(--border);border-radius:12px;padding:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div><div style="font-size:14px;font-weight:700">📍 ${l.city}, ${l.state}</div><div style="font-size:12px;color:var(--text-dim)">${l.type} · ${l.posts} posts</div></div>
+              <span class="badge badge-${l.risk.toLowerCase().replace('watch','low')}">${l.risk}</span>
+            </div>
+            <div class="sev-bar"><div class="sev-track"><div class="sev-fill" style="width:${l.score}%;background:${l.color}"></div></div><span class="sev-num">${l.score}%</span></div>
+          </div>`).join('')}
+      </div>`
+  },
+  recommendations: {
+    icon:'💡', iconBg:'var(--green-dim)', title:'AI Recommendations', sub:'LLM-generated action items · Based on current crisis data',
+    body: () => `
+      <div class="modal-stat-row">
+        <div class="modal-stat"><div class="modal-stat-lbl">Actions Generated</div><div class="modal-stat-val" style="color:var(--blue-light)">6</div></div>
+        <div class="modal-stat"><div class="modal-stat-lbl">Critical</div><div class="modal-stat-val" style="color:var(--red)">2</div></div>
+        <div class="modal-stat"><div class="modal-stat-lbl">Est. Resolution</div><div class="modal-stat-val" style="color:var(--green)">4h</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${[
+          {p:'CRITICAL',t:'🚒',title:'Deploy emergency resources to Mumbai',desc:'Field verification team needed in Kurla and Dharavi immediately. Coordinate with NDRF.',c:'var(--red)'},
+          {p:'CRITICAL',t:'📢',title:'Issue official power advisory for Delhi',desc:'Counter panic by publishing accurate DISCOM update across all official social channels.',c:'var(--red)'},
+          {p:'HIGH',t:'🔍',title:'Escalate misinformation monitoring in Kolkata',desc:'Flag seed accounts on YouTube and Reddit. Request content review from platform teams.',c:'var(--orange)'},
+          {p:'HIGH',t:'📡',title:'Coordinate with Twitter/Meta to flag posts',desc:'Submit formal misinformation reports for Mumbai and Delhi crisis posts.',c:'var(--orange)'},
+          {p:'MEDIUM',t:'👁️',title:'Place Chennai on watch — sentiment trending negative',desc:'Assign monitoring task. No immediate action required but flag for hourly review.',c:'var(--yellow)'},
+          {p:'STANDARD',t:'📊',title:'Schedule sentiment reports every 15 minutes',desc:'Automated alerts should trigger if any location crosses 70% negative threshold.',c:'var(--blue-light)'}
+        ].map((r,i)=>`
+          <div style="background:var(--navy-700);border:1px solid var(--border);border-left:3px solid ${r.c};border-radius:12px;padding:15px;display:flex;gap:12px;align-items:flex-start;">
+            <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${r.t}</div>
+            <div>
+              <div style="font-size:13.5px;font-weight:700;margin-bottom:3px">${r.title}</div>
+              <div style="font-size:12px;color:var(--text-dim)">${r.desc}</div>
+              <div style="font-size:10.5px;font-weight:700;color:${r.c};margin-top:6px;font-family:'JetBrains Mono',monospace">● ${r.p}</div>
+            </div>
+          </div>`).join('')}
+      </div>`
+  }
+};
+
+function openModal(type) {
+  const m = modalContent[type];
+  if (!m) return;
+  document.getElementById('mIcon').textContent = m.icon;
+  document.getElementById('mIcon').style.background = m.iconBg;
+  document.getElementById('mTitle').textContent = m.title;
+  document.getElementById('mSub').textContent = m.sub;
+  document.getElementById('mBody').innerHTML = m.body();
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function confirmPublish() {
+  closeModal();
+  toast('📤 Publishing...', 'Sending to 4 official channels...');
+  await new Promise(r => setTimeout(r, 2000));
+  toast('✅ Published!', 'Advisory live on Twitter, Facebook, Instagram & Portal');
+}
+
+function confirmShare() {
+  closeModal();
+  toast('📨 Sent!', 'Team notified via SocialPulse dashboard alerts');
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ─── TOAST ───
+let toastQueue = [];
+let toastActive = false;
+
+function toast(title, msg) {
+  toastQueue.push({title, msg});
+  if (!toastActive) showNextToast();
+}
+
+
+function showNextToast() {
+  if (toastQueue.length === 0) { toastActive = false; return; }
+  toastActive = true;
+  const {title, msg} = toastQueue.shift();
+  document.getElementById('toastT').textContent = title;
+  document.getElementById('toastM').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => {
+    t.classList.remove('show');
+    setTimeout(showNextToast, 400);
+  }, 2800);
+}
+
+const mapDetails = {
+  mumbai: {
+    emoji:'🌊', name:'Mumbai, Maharashtra', badge:'badge-critical', level:'CRITICAL',
+    posts:'1,204', rate:'340/hr', sentiment:'78% Negative',
+    type:'Flood Misinformation', platforms:'Reddit + Twitter',
+    detail:'Social media posts claiming dangerous water levels in Kurla, Dharavi and Andheri. Cross-platform verification shows exaggeration. Immediate official response recommended.'
+  },
+  delhi: {
+    emoji:'⚡', name:'Delhi NCT', badge:'badge-high', level:'HIGH',
+    posts:'891', rate:'210/hr', sentiment:'65% Negative',
+    type:'Power Outage Panic', platforms:'Twitter',
+    detail:'Panic spreading about city-wide outage. DISCOM confirms only scheduled maintenance in Rohini. Misinformation being amplified by large accounts.'
+  },
+  kolkata: {
+    emoji:'🦠', name:'Kolkata, West Bengal', badge:'badge-medium', level:'MEDIUM',
+    posts:'452', rate:'90/hr', sentiment:'60% Negative',
+    type:'Health Rumor', platforms:'YouTube + Reddit',
+    detail:'Health misinformation cluster originating from 2-3 seed accounts claiming disease outbreak in North Kolkata. State Health Dept reports no outbreak confirmed.'
+  },
+  chennai: {
+    emoji:'👁️', name:'Chennai, Tamil Nadu', badge:'badge-low', level:'WATCH',
+    posts:'184', rate:'22/hr', sentiment:'38% Negative',
+    type:'Monitoring — Low Risk', platforms:'Twitter',
+    detail:'Sentiment trending slightly negative. No specific crisis identified. Routine monitoring in place with alerts set for threshold breach.'
+  },
+  bangalore: {
+    emoji:'📡', name:'Bengaluru, Karnataka', badge:'badge-low', level:'WATCH',
+    posts:'98', rate:'12/hr', sentiment:'30% Negative',
+    type:'Monitoring — Low Risk', platforms:'Reddit',
+    detail:'Normal social media activity. Flagged for routine monitoring due to proximity to other affected regions.'
+  }
+};
+
+function mapClick(city) {
+  const d = mapDetails[city];
+  if (!d) return;
+  document.getElementById('mapDetail').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span style="font-size:24px">${d.emoji}</span>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--text)">${d.name}</div>
+        <span class="badge ${d.badge}">${d.level}</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between"><span>Posts</span><strong style="color:var(--text)">${d.posts}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span>Rate</span><strong style="color:var(--red)">${d.rate}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span>Sentiment</span><strong style="color:var(--orange)">${d.sentiment}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span>Type</span><strong style="color:var(--text);font-size:12px">${d.type}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span>Source</span><strong style="color:var(--text)">${d.platforms}</strong></div>
+    </div>
+    <p style="font-size:12.5px;line-height:1.7;margin-bottom:14px">${d.detail}</p>
+    <button class="btn-primary" style="width:100%;justify-content:center;font-size:12.5px" onclick="goRespond('${city}')">🎯 Open in Response Center</button>
+  `;
+  toast(`📍 ${d.name}`, `${d.level} · ${d.posts} posts`);
+}
+
+function setMapView(btn, filter) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const hotspots = { all:['mumbai','delhi','kolkata','chennai'], critical:['mumbai'], high:['delhi'], medium:['kolkata'] };
+  const show = hotspots[filter] || hotspots.all;
+  ['mumbai','delhi','kolkata','chennai'].forEach(id => {
+    const el = document.getElementById('hs-' + id);
+    if (el) el.style.opacity = show.includes(id) ? '1' : '0.2';
+  });
+}
+
+// ═══════════════════════════════════════════
+// ─── KEYWORD ALERTS ───
+// ═══════════════════════════════════════════
+function addKeyword() {
+  const kw = document.getElementById('kwInput').value.trim();
+  const thresh = document.getElementById('kwThresh').value || '50';
+  const plat = document.getElementById('kwPlatform').value;
+  if (!kw) { toast('⚠️ Empty', 'Please enter a keyword first'); return; }
+  const rate = Math.floor(Math.random() * 30);
+  const platLabel = {all:'All Platforms', reddit:'Reddit', twitter:'Twitter / X', youtube:'YouTube'}[plat];
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td style="font-weight:600">🔍 ${kw}</td>
+    <td>${platLabel}</td>
+    <td>${thresh}/hr</td>
+    <td style="color:var(--green);font-family:'JetBrains Mono',monospace;font-weight:700">${rate}/hr</td>
+    <td><span class="badge badge-low">MONITORING</span></td>
+    <td><button class="respond-btn" onclick="removeKeyword(this)">Remove</button></td>
+  `;
+  document.getElementById('kwBody').appendChild(row);
+  document.getElementById('kwInput').value = '';
+  const cnt = document.querySelectorAll('#kwBody tr').length;
+  document.getElementById('kwCount').textContent = cnt;
+  toast('✅ Alert Added', `Now monitoring "${kw}" on ${platLabel}`);
+}
+
+function quickAdd(kw) {
+  document.getElementById('kwInput').value = kw;
+  addKeyword();
+}
+
+function removeKeyword(btn) {
+  btn.closest('tr').remove();
+  const cnt = document.querySelectorAll('#kwBody tr').length;
+  document.getElementById('kwCount').textContent = cnt;
+  toast('🗑️ Removed', 'Keyword alert deleted');
+}
+
+function clearAllKeywords() {
+  document.getElementById('kwBody').innerHTML = '';
+  document.getElementById('kwCount').textContent = '0';
+  toast('🗑️ Cleared', 'All keyword alerts removed');
+}
+
+async function refreshAISuggestions() {
+  const box = document.getElementById('aiKeywords');
+  box.innerHTML = '<div style="color:var(--text-dim);font-size:13px;padding:10px 0">🤖 Generating suggestions<span class="spin" style="margin-left:8px"></span></div>';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:300,
+        messages:[{role:'user', content:`You are a crisis monitoring AI for India. Current crises: Mumbai flood misinformation, Delhi power panic, Kolkata health rumor. Suggest 4 important crisis-related keywords to monitor on social media. Return ONLY a JSON array like: [{"kw":"keyword here","reason":"short reason"}]. No other text.`}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content[0].text;
+    const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+    box.innerHTML = parsed.map(s => `
+      <div class="rec-item" style="cursor:pointer" onclick="quickAdd('${s.kw}')">
+        <div class="rec-num">+</div>
+        <div><strong>${s.kw}</strong> — ${s.reason}</div>
+      </div>`).join('');
+  } catch(e) {
+    box.innerHTML = '<div style="color:var(--text-dim);font-size:13px">Could not load AI suggestions. Try again.</div>';
+  }
+}
+
+// ═══════════════════════════════════════════
+// ─── REDDIT LIVE FEED ───
+// ═══════════════════════════════════════════
+let fetchedRedditPosts = [];
+
+async function fetchReddit() {
+  const query = document.getElementById('redditSearch').value.trim() || 'india';
+  const btn = document.getElementById('redditBtnText');
+  btn.innerHTML = '<span class="spin"></span> Fetching...';
+  document.getElementById('redditStatus').textContent = 'Connecting to Reddit...';
+  document.getElementById('redditFeed').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim)"><span class="spin"></span><div style="margin-top:12px">Fetching live posts...</div></div>';
+
+  try {
+    // Reddit's public JSON API — no auth needed for public posts
+    const url = `https://www.reddit.com/search.json?q=${encodeURIComponent(query)}&sort=new&limit=15&t=day`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    const data = await res.json();
+    const posts = data.data.children.map(c => c.data);
+    fetchedRedditPosts = posts;
+
+    if (posts.length === 0) {
+      document.getElementById('redditFeed').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim)">No posts found. Try a different keyword.</div>';
+      return;
+    }
+
+    document.getElementById('redditFeed').innerHTML = posts.map(p => {
+      const score = p.ups || 0;
+      const comments = p.num_comments || 0;
+      const sub = p.subreddit_name_prefixed || 'r/unknown';
+      const time = new Date(p.created_utc * 1000).toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit',hour12:true});
+      const title = p.title ? p.title.substring(0,120) : 'No title';
+      const flair = p.link_flair_text || '';
+      const url = `https://reddit.com${p.permalink}`;
+      return `
+        <div style="background:var(--navy-700);border:1px solid var(--border);border-radius:12px;padding:16px;transition:all 0.2s" onmouseover="this.style.borderColor='var(--border-bright)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px">
+            <div style="font-size:13.5px;font-weight:600;line-height:1.5;flex:1">${title}</div>
+            ${flair ? `<span style="font-size:10px;background:var(--blue-glow);border:1px solid rgba(26,110,245,0.2);border-radius:6px;padding:2px 8px;color:var(--blue-light);white-space:nowrap">${flair}</span>` : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;font-size:11.5px;color:var(--text-dim)">
+            <span style="color:var(--orange);font-weight:600">${sub}</span>
+            <span>⬆️ ${score.toLocaleString()}</span>
+            <span>💬 ${comments}</span>
+            <span>🕐 ${time}</span>
+            <a href="${url}" target="_blank" style="margin-left:auto;color:var(--blue-light);font-weight:600;text-decoration:none;font-size:11.5px">View →</a>
+          </div>
+        </div>`;
+    }).join('');
+
+    // Quick sentiment
+    const neg = posts.filter(p => /flood|crash|danger|panic|dead|fake|rumor|outage|fear|kill|riot/i.test(p.title)).length;
+    const negPct = Math.round((neg / posts.length) * 100);
+    const posPct = Math.round(((posts.length - neg) / posts.length) * 60);
+    const neuPct = 100 - negPct - posPct;
+    document.getElementById('redditSentiment').innerHTML = `
+      <div style="margin-bottom:12px;font-size:12px;color:var(--text-dim)">Based on ${posts.length} fetched posts</div>
+      ${[['😡 Negative', negPct, 'var(--red)'],['😐 Neutral', Math.max(neuPct,5), 'var(--text-dim)'],['😊 Positive', Math.max(posPct,5), 'var(--green)']].map(([label,pct,color])=>`
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:12px;width:90px;color:${color}">${label}</span>
+          <div style="flex:1;height:7px;background:rgba(255,255,255,0.07);border-radius:99px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${color};border-radius:99px"></div></div>
+          <span style="font-size:11px;font-family:'JetBrains Mono',monospace;width:28px;text-align:right">${pct}%</span>
+        </div>`).join('')}
+      <div style="margin-top:12px;padding:10px;background:var(--red-dim);border-radius:8px;border:1px solid rgba(255,59,92,0.2);font-size:12px;color:var(--text-dim)">
+        🚨 <strong style="color:var(--red)">${neg} posts</strong> matched crisis keywords
+      </div>`;
+
+    document.getElementById('redditStatus').textContent = `${posts.length} posts fetched · Just now`;
+    toast('✅ Reddit Fetched', `${posts.length} live posts from r/${query}`);
+  } catch(e) {
+    document.getElementById('redditFeed').innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-dim)"><div style="font-size:30px;margin-bottom:12px">⚠️</div><div style="font-size:14px;font-weight:600;margin-bottom:6px">Could not fetch Reddit data</div><div style="font-size:13px">Reddit may be blocking the request. Try fetching again or use a VPN.</div></div>`;
+    document.getElementById('redditStatus').textContent = 'Fetch failed';
+    toast('⚠️ Fetch Error', 'Reddit API request blocked. Try again.');
+  }
+  btn.innerHTML = '🟠 Fetch Live Posts';
+}
+
+async function analyzeRedditWithAI() {
+  if (fetchedRedditPosts.length === 0) {
+    toast('⚠️ No Data', 'Please fetch Reddit posts first');
+    return;
+  }
+  const box = document.getElementById('redditAIAnalysis');
+  box.innerHTML = '<span class="spin"></span> Analyzing with Claude AI...';
+  const titles = fetchedRedditPosts.slice(0, 10).map(p => p.title).join('\n');
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:500,
+        messages:[{role:'user', content:`You are a crisis intelligence AI. Analyze these real Reddit post titles and identify: (1) Any crisis signals or misinformation patterns (2) Overall public mood (3) One recommended action for authorities. Be concise, 4-5 sentences max, no markdown.\n\nPost titles:\n${titles}`}]
+      })
+    });
+    const data = await res.json();
+    box.textContent = data.content[0].text;
+    toast('🤖 Analysis Complete', 'Claude AI analyzed your Reddit feed');
+  } catch(e) {
+    box.textContent = 'AI analysis unavailable. Please try again.';
+  }
+}
+
+// ═══════════════════════════════════════════
+// ─── PDF EXPORT ───
+// ═══════════════════════════════════════════
+async function exportPDF() {
+  toast('📄 Generating PDF...', 'Building crisis report with AI summary...');
+
+  // Get AI summary for the report
+  let aiSummary = 'SocialPulse AI has detected 3 active crises across India. Mumbai flood misinformation is at CRITICAL level with 1,204 posts. Delhi power outage panic is HIGH with 891 posts. Kolkata health rumor is MEDIUM with 452 posts. Overall risk score: 87%. Immediate official response is recommended for Mumbai and Delhi.';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:400,
+        messages:[{role:'user', content:`Write a 3-sentence executive summary for a crisis intelligence PDF report. Current situation: 3 active crises in India — Mumbai flood misinformation (CRITICAL, 1204 posts), Delhi power outage panic (HIGH, 891 posts), Kolkata health rumor (MEDIUM, 452 posts). Risk score 87%. Be professional and concise.`}]
+      })
+    });
+    const data = await res.json();
+    aiSummary = data.content[0].text;
+  } catch(e) {}
+
+  const now = new Date();
+  const dateStr = now.toLocaleString('en-IN', {dateStyle:'full', timeStyle:'short'});
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+  <style>
+    body{font-family:Arial,sans-serif;max-width:800px;margin:0 auto;padding:40px;color:#1a1a2e}
+    h1{font-size:28px;color:#1a6ef5;border-bottom:3px solid #1a6ef5;padding-bottom:12px;margin-bottom:6px}
+    .subtitle{color:#666;font-size:14px;margin-bottom:30px}
+    .exec-summary{background:#f0f6ff;border-left:4px solid #1a6ef5;border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:28px;font-size:14px;line-height:1.8}
+    h2{font-size:18px;color:#1a1a2e;margin:28px 0 12px;border-bottom:1px solid #e0e0e0;padding-bottom:6px}
+    table{width:100%;border-collapse:collapse;margin-bottom:24px;font-size:13px}
+    th{background:#1a6ef5;color:white;padding:10px 14px;text-align:left}
+    td{padding:10px 14px;border-bottom:1px solid #eee}
+    tr:nth-child(even){background:#f8f9ff}
+    .badge-critical{color:#fff;background:#ff3b5c;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    .badge-high{color:#fff;background:#ff8c42;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    .badge-medium{color:#1a1a2e;background:#ffd166;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    .badge-low{color:#fff;background:#06d6a0;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+    .kpi{background:#f0f6ff;border:1px solid #d0e4ff;border-radius:8px;padding:14px;text-align:center}
+    .kpi-val{font-size:26px;font-weight:800;color:#1a6ef5;margin:4px 0}
+    .kpi-lbl{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:0.5px}
+    .footer{margin-top:40px;padding-top:16px;border-top:1px solid #e0e0e0;font-size:11px;color:#999;text-align:center}
+    .rec-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #eee;font-size:13px}
+    .rec-num{background:#1a6ef5;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+  </style></head><body>
+  <h1>🚨 SocialPulse AI — Crisis Intelligence Report</h1>
+  <div class="subtitle">Generated: ${dateStr} · Platform: SocialPulse AI v3 · Powered by Claude AI</div>
+
+  <div class="exec-summary"><strong>Executive Summary</strong><br/>${aiSummary}</div>
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-lbl">Posts Monitored</div><div class="kpi-val">2,847</div></div>
+    <div class="kpi"><div class="kpi-lbl">Active Crises</div><div class="kpi-val" style="color:#ff3b5c">3</div></div>
+    <div class="kpi"><div class="kpi-lbl">Risk Score</div><div class="kpi-val" style="color:#ff8c42">87%</div></div>
+    <div class="kpi"><div class="kpi-lbl">Avg Response</div><div class="kpi-val" style="color:#06d6a0">2.4s</div></div>
+  </div>
+
+  <h2>📋 Active Crisis Summary</h2>
+  <table>
+    <thead><tr><th>Crisis</th><th>Location</th><th>Severity</th><th>Posts</th><th>Rate</th><th>Sentiment</th></tr></thead>
+    <tbody>
+      <tr><td>🌊 Flood Misinformation</td><td>Mumbai</td><td><span class="badge-critical">CRITICAL</span></td><td>1,204</td><td>340/hr</td><td>78% Negative</td></tr>
+      <tr><td>⚡ Power Outage Panic</td><td>Delhi</td><td><span class="badge-high">HIGH</span></td><td>891</td><td>210/hr</td><td>65% Negative</td></tr>
+      <tr><td>🦠 Health Rumor</td><td>Kolkata</td><td><span class="badge-medium">MEDIUM</span></td><td>452</td><td>90/hr</td><td>60% Negative</td></tr>
+    </tbody>
+  </table>
+
+  <h2>📊 Sentiment Analysis (BERT/RoBERTa)</h2>
+  <table>
+    <thead><tr><th>Sentiment</th><th>Count</th><th>Percentage</th><th>Dominant Platform</th></tr></thead>
+    <tbody>
+      <tr><td>😡 Negative</td><td>1,566</td><td>55%</td><td>Reddit (62%)</td></tr>
+      <tr><td>😐 Neutral</td><td>712</td><td>25%</td><td>YouTube</td></tr>
+      <tr><td>😊 Positive</td><td>569</td><td>20%</td><td>Twitter</td></tr>
+    </tbody>
+  </table>
+
+  <h2>💡 AI Recommendations</h2>
+  <div>
+    <div class="rec-item"><div class="rec-num">1</div>Deploy emergency field verification teams to Mumbai (Kurla, Dharavi) immediately</div>
+    <div class="rec-item"><div class="rec-num">2</div>Issue official DISCOM power advisory for Delhi across all social channels</div>
+    <div class="rec-item"><div class="rec-num">3</div>Flag seed accounts on YouTube/Reddit spreading Kolkata health misinformation</div>
+    <div class="rec-item"><div class="rec-num">4</div>Coordinate with Twitter/Meta to label misinformation posts in Mumbai</div>
+    <div class="rec-item"><div class="rec-num">5</div>Set automated 15-minute sentiment alerts for all 3 active locations</div>
+  </div>
+
+  <h2>📈 Model Performance</h2>
+  <table>
+    <thead><tr><th>Metric</th><th>Value</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Detection Accuracy</td><td>98.5%</td><td><span class="badge-low">EXCELLENT</span></td></tr>
+      <tr><td>Model F1 Score</td><td>0.972</td><td><span class="badge-low">EXCELLENT</span></td></tr>
+      <tr><td>False Positives (Week)</td><td>3</td><td><span class="badge-low">GOOD</span></td></tr>
+      <tr><td>Avg Response Time</td><td>2.4 seconds</td><td><span class="badge-low">EXCELLENT</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">SocialPulse AI — GenAI-Powered Early Crisis Detection & Intelligent Response System<br/>
+  This report was automatically generated. All data is from public social media sources. For official use only.</div>
+  </body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `SocialPulse_CrisisReport_${now.toISOString().slice(0,10)}.html`;
+  a.click();
+  toast('✅ PDF Report Ready!', 'Crisis report downloaded — open in browser and Print → Save as PDF');
+}
+
+</script>
+</body>
+</html>
